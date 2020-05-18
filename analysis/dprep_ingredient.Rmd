@@ -1,0 +1,79 @@
+---
+title: "Data Preparation"
+output:
+  workflowr::wflow_html:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1. Data Preparation
+    i) [Herbicide Use](dprep.html)
+    ii) [Land Cover](dprep_land.html)
+    iii) [County Area / FIPS Codes](dprep_county.html)
+    iv) [Herbicide Active Ingredients](dprep_ingredient.html)
+
+    
+#Lists of Herbicide Active Ingredient
+```{r message=FALSE, echo=FALSE}
+library(tidyverse)
+library(plyr)
+library(dplyr)
+library(png)
+library(grid)
+library(readxl)
+```
+
+The dataset for the list of herbicide active ingredient was done in two steps. First, a dataset containing various pesticide use for different crops was downloaded. This data is made available by the USGS's **National Water-Quality Assessment (NAWQA) Project**. In their '[Pesticide National Synthesis Project](https://water.usgs.gov/nawqa/pnsp/usage/maps/county-level/)' page, the *"Low Estimate Agricultural Pesticide Use by Corn Group 1992 to 2012"* was downloaded. This dataset contains all the pesticide used in various crops from the years 1992 to 2012 at a county level. Second, in order to filter out the herbicide from the list of pesticides, another dataset containing the list of herbicides compounds was downloaded. 
+
+These dataset were converted into excel and imported into **R**.
+```{r warning=FALSE}
+active_ing <- read_excel("../data/big_data/pesticideuse_low.xlsx")
+usgs_herbicide <- read_excel("../data/big_data/usgs_herbicides.xlsx")
+```
+
+The NAWQA's dataset on pesticuse is extensive, so the first step was filtering down this dataset into the states and time frame used for this project's analysis.
+```{r}
+all_ingredient <- active_ing %>% 
+  filter(State %in% c("Arkansas","Kansas","Louisiana","Missouri","Nebraska","Oklahoma","Texas"), Year %in% c(1997, 2002, 2007, 2012))
+```
+
+A function to remove extra characters in *compound* name was created. This would help join compounds to the list of herbicides. 
+```{r}
+cmpd_std <- function(x){toupper(gsub(",|-| ","",x))}
+```
+
+The function was applied. 
+```{r}
+all_ingredient <- all_ingredient %>%
+  mutate(compound_std=cmpd_std(Compound))
+```
+
+Similarly, only the relevant columns from the *herbicide list* was filtered.   
+```{r}
+usgs_herb <- usgs_herbicide %>% 
+  select(1,2)
+names(usgs_herb)[1] <- "compound_std"
+```
+
+The *herbicide list* was then joined with the more extensive pesticide data set, so only herbicide data's would show.
+```{r}
+join_herb <- all_ingredient %>%
+  left_join(.,usgs_herb, by="compound_std")
+```
+All the non-herbicide ingredients were removed. The resulting dataset was converted into excel for further analysis.
+```{r}
+join_herb2 <- join_herb[-which(is.na(join_herb$category)),]
+```
+
+The excel output was named **join_herb2.xlsx** and contains values of broadleaf herbicide compounds used in different crops.  
+***
+
+#Herbicide Active Ingredient Map
+To figure out the list of herbicide active ingredient used at a county level, another dataset from the same [Pesticide National Synthesis Project](https://water.usgs.gov/nawqa/pnsp/usage/maps/county-level/)'s page was downloaded. The **1997** and the **2012** 'County-level pesticide use estimates' was downloaded. 
+
+After downloading, a *fips* column was created in `Excel`. The fips column was calculated using the **concatenate** formula which was used to join the values of *STATE_FIPS_CODE* and *COUNTY_FIPS_CODE*. The newly created **fips** column would help map the data in ArcGIS.
+
+***

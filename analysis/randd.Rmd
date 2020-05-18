@@ -1,0 +1,177 @@
+---
+title: "Results and Discussion"
+output:
+  workflowr::wflow_html:
+    toc: false
+    toc_depth: 1
+    toc_float: 
+      collapsed: false
+      smooth_scroll: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+3. Results and Discussions
+    i) [Herbicide Use and Land Cover](randd.html)
+    ii) [Herbicide Active Ingredients](results_ingredient.html)
+
+##Herbicide Use per Acres
+```{r, echo=FALSE, message=FALSE}
+library(tidyverse)
+library(plyr)
+library(dplyr)
+library(png)
+library(grid)
+library(readxl)
+library(reshape2)
+library(ggplot2)
+library(gridExtra)
+library(imager)
+```
+
+
+![**Figure 1a.** This figure was created using ArcGIS. The main map is an illustration of the 'Change in Percent Area Treated with Herbicide from 1997 to 2012'. The red shade indicates an increase in area treated while the green shade illustrates counties where area treated with herbicide has decreased.](rfig_1a.png)
+
+```{r, echo=FALSE}
+herb_state <- read_excel("../data/big_data/herbicide_state.xlsx")
+```
+
+```{r, echo=FALSE}
+herb_state <- herb_state %>%
+  select(1,2,8:11)
+names(herb_state)[3] <- "1997"
+names(herb_state)[4] <- "2002"
+names(herb_state)[5] <- "2007"
+names(herb_state)[6] <- "2012"
+```
+
+```{r, echo=FALSE}
+herb_state = melt(herb_state, id=c("State","X__1"))
+```
+
+```{r, echo=FALSE}
+ggplot(data=herb_state, aes(x=variable, y=value*100, color=State, group=State))+
+  geom_path()+
+  theme_bw()+
+  labs(x="Year", y="Percent")+
+  geom_hline(yintercept = 0, size=1, color="black")+
+  geom_vline(xintercept = 0, size=1, color="black")+
+  scale_y_continuous(breaks=seq(0, 50, by=10))
+```
+
+**Figure 1b.** Shows the changes in state-level percent area treated with herbicide.  
+
+* Both Fig. 1a and Fig. 1b show an increasing trend in percent acres treated with herbicide, which means more land is being treated with herbicides.
+* The most increase in percent acres treated is seen in western Kansas and north-west Nebraska. Hot spot analysis reflect these increases (Fig. 1a). This is represented in Fig. 1b, with Nebraska and Kansas showing the most change. (Note: The blue shade in the Hot Spot map does not indicate a decrease in herbicide use per acre, but simply a low value of change.)
+* The eastern and southern part shows a moderate amount of increases, with slight decreases in some counties.  
+
+***
+
+##Changes in Land Use
+```{r, echo=FALSE}
+grass_st <- read_excel("../data/big_data/2b_grass2.xlsx")
+crop_st <- read_excel("../data/big_data/2b_crop2.xlsx")
+shrub_st <- read_excel("../data/big_data/2b_shrub2.xlsx")
+hay_st <- read_excel("../data/big_data/2b_hay2.xlsx")
+```
+
+```{r, echo=FALSE}
+names(grass_st)[3] <- "1997"
+names(grass_st)[4] <- "2002"
+names(grass_st)[5] <- "2007"
+names(grass_st)[6] <- "2012"
+
+names(crop_st)[3] <- "1997"
+names(crop_st)[4] <- "2002"
+names(crop_st)[5] <- "2007"
+names(crop_st)[6] <- "2012"
+
+names(shrub_st)[3] <- "1997"
+names(shrub_st)[4] <- "2002"
+names(shrub_st)[5] <- "2007"
+names(shrub_st)[6] <- "2012"
+
+names(hay_st)[3] <- "1997"
+names(hay_st)[4] <- "2002"
+names(hay_st)[5] <- "2007"
+names(hay_st)[6] <- "2012"
+```
+
+```{r, echo=FALSE}
+grass_st <- melt(grass_st, id=c("State","X__1"))
+crop_st <- melt(crop_st, id=c("State","X__1"))
+shrub_st <- melt(shrub_st, id=c("State","X__1"))
+hay_st <- melt(hay_st, id=c("State","X__1"))
+```
+
+
+![**Figure 2a.** This map was created in ArcGIS and illustrates changes in land use in Grassland, Shrubland, Hay/Pasture Land, and Cropland from 1997 to 2012. The red shade represents loss of certain land types, while a green shade represents a gain of that land type. Grey color indicates no signifianct change.](rfig_2a.png)
+
+
+
+```{r, echo=FALSE}
+a3 <- ggplot(data=grass_st, aes(x=variable, y=value, color=State, group=State))+
+  geom_path()+
+  theme_bw()+
+  labs(title="Percent Change in Grassland", x="Year", y="Percent")+
+  geom_hline(yintercept = 0, size=1, color="black")+
+  geom_vline(xintercept = 0, size=1, color="black")+
+  scale_y_continuous(breaks=seq(-1, 0.6, by=0.2))
+
+a1 <- ggplot(data=crop_st, aes(x=variable, y=value*1000, color=State, group=State))+
+  geom_path()+
+  theme_bw()+
+  labs(title="Percent Change in Cropland", x="Year", y="Percent*1000")+
+  geom_hline(yintercept = 0, size=1, color="black")+
+  geom_vline(xintercept = 0, size=1, color="black")
+  
+a4 <- ggplot(data=shrub_st, aes(x=variable, y=value, color=State, group=State))+
+  geom_path()+
+  theme_bw()+
+  labs(title="Percent Change in Shrubland", x="Year", y="Percent")+
+  geom_hline(yintercept = 0, size=1, color="black")+
+  geom_vline(xintercept = 0, size=1, color="black")+
+  scale_y_continuous(breaks=seq(-0.07, 1, by=0.02))
+
+a2 <- ggplot(data=hay_st, aes(x=variable, y=value, color=State, group=State))+
+  geom_path()+
+  theme_bw()+
+  labs(title="Percent Change in Hay/Pasture land", x="Year", y="Percent")+
+  geom_hline(yintercept = 0, size=1, color="black")+
+  geom_vline(xintercept = 0, size=1, color="black")+
+  scale_y_continuous(breaks=seq(-1, 1, by=0.25))
+
+grid.arrange(a1,a2,a3,a4, nrow=2)
+```
+
+**Figure 2b.** These 4 graphs represent a state level 'Percent Change in land cover from 1997 to 2012' for Cropland, Hay/Pasture land, Grassland, and Shrubland. The percent changes are relative to the value each state had in 1997. 
+
+> [Link](https://dickinson0-my.sharepoint.com/:x:/g/personal/shakyak_dickinson_edu/EflwJTpNam1JtHFDBJH2u2sB3OEORr-AfgYKiacJDb8k3A?e=CmertB) to Table with all the percent value of each land cover type.
+
+
+*The range of cropland change, as seen in Fig. 2a and Fig. 2b, is very little.
+
+*There was noticable increases of grassland in Nebraska, eastern Missouri, and some southern parts of Texas. While, majority of Loiusiana and Arkansas had no significant changes in their grassland, the rest of the states had lost some percentage of grasslands. Western Kansas, and Oklahoma lost the most grasslands. 
+
+*The eastern states, specially Nebraska, Arkansas, and Loiusiana had no significant changes in Shrubland. While, some western counties in Texas shows some increase, Fig. 2b shows Texas, along with Oklahoma, are among the states loosing the most shrubland.
+
+*For hay and pastureland, the central part of the states showed some increase. Loisiana lost the most while, Oklahoma gained the most hay and pastureland.
+
+***Note:** While the land cover changes are helpful to see the changes in time, it is important to understand the maps limitation. First, the resolution of the map is at 250m, and with a finer resolution, more accurate results can be calculated. Second, these land cover maps were generated by remote sensing which can have inaccurate interpretation of the attributes of the land.  
+
+***
+
+###**Discussion**
+
+The rise of percent acres treated with herbicide may contribute to monarch butterflies unable to complete their migration. All states within the project site showed an increase in acres treated, and almost all counties experianced certain amount of increases. If more acres of land are treated with herbicides, it is likely that many broadleaf plants that monarch rely on during their migration are declining.
+
+Cropland, which was previously expected to decline the most, was actually the land cover that experianced the lowest change. However, grassland, hay/pasture land, and shrubland exprianced decline. While Fig. 2b illustrates an imperfect balance of percent increase and decrease (with the exception of shrubland), the increases of all these land covers are concentrated on very few counties. Most of the counties within the project site experianced decline in all forms of land cover. The migratory route of monarch's is very large, and increases in some counties is likely to prove insignificant to them. It is also likely that the decrease in all these land cover would result in the decrease of floral abvailability.
+
+It is interesting to note the relation between the two maps: Fig. 1a and Fig. 2a. For example, western Kansas had a steep increase in percent acres treated with herbicides, but the area also lost a lot of grassland and a little shrubland and hay/pastureland. These patterns could indicate that more and more croplands were beginning to be treated with herbicides.  
+
+While these results help in building a context of the area where monarch's fly during their migration, is it difficult to predict if these changes really affect monarch butterflies. While it can be likely that these changes do seem to be detrimental to monarch butterflies, further research regarding the count of monarch butterflies in these states, and research that directly corresponds these changes to floral availability could provide more accurate corelation. However, the data regarding moanrch count and floral resources have their own uncertainties and are not readily available. But with the dataset that this project dealt with, the changes in herbicide use and land cover does appear to hinder monarch's availability to find floral resources.      
+
+***
+

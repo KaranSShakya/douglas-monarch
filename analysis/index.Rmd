@@ -1,11 +1,52 @@
 ---
-title: "Home"
+title: "Threats to Monarch Migration : A Look into the Changes in Herbicide Use and Land Cover"
 site: workflowr::wflow_site
 output:
-  workflowr::wflow_html:
-    toc: false
-editor_options:
-  chunk_output_type: console
+  workflowr::wflow_html
+  toc:false
 ---
+ 
 
-Welcome to my research website.
+#**Introduction**
+
+The population of the monarch butterfly (*Danaus plexippus*) is declining[^1]. One hypothesis attributes this population decline to the loss of milkweed[^2]. Milkweed (*Asclepias supp.*) is an important plant for monarchs, as it is it's larvae's only source of food. The hypothesis explains how a loss of milkweed in the various states where monarch's lay their eggs is causing the population of monarchs to decrease. 
+
+However, there is also another hypothesis, that proposes an alternate explanation to the decline of Monarch population. This hypothesis explains how the monarch population is declining because these butterflies fail to complete their fall migration[^3]. During the fall, monarchs migrate to a small forrest in Mexico during the fall and spend the winter there. During summer, these butterflies migrate back to several states in the US to lay their eggs. This migration takes multiple generations to complete. The second hypothesis explains how a lack of food, water, and habitat fragmentation have contributed to more monarch butterflies failing to successfully complete their fall migration.      
+
+This project focuses on the second hypothesis, and attempts to assess how floral resources have changed along states where monarch's travel during their migration. Floral resources are key to monarchs as it provides nectar - an important source of food essential for monarchs to complete their migration. This project analyzes **herbicide use** and **land cover properties** and attempts to visualize how these factor might affect the availability of floral resources. Additionally, further analysis is done on **herbicide active ingredients** in hopes of identifying patterns that might adversely affect any plants that are essential to sustain monarch butterflies.   
+
+If the second hypothesis explaining monarch butterflies population decline is accurate, there would most likely be an increase in the use of herbicide in all these states. Herbicides, specially with active ingredients that specifically target broadleaf plants, are likely to increase. These increasing herbicides could contribute to the declining floral availability which would mean monarch butterflies would have fewer plants to feed from during their flight. The areas of croplands, in perticular, can likely be increasing. Croplands, in general, lack the floral diversity to support insects at a large scale. An increase in croplands can corelate to the decline in flowering plants. While the floral availability of grasslands, shrublands, and hay and pasturelands in southern states are difficult to estimate, a decline in all these land cover could also possibly contribute the lack of floral availability.  
+
+The sites for this project were chosen based on the migration route of the moanrchs. The diagram below illustrates the chosen 7 states[^4]:
+
+![Project states](project_site1.png)
+
+***
+
+This website documents..
+
+#**Structure of the website**
+
+1. Data Preparation
+    i) [Herbicide Use](dprep.html)
+    ii) [Land Cover](dprep_land.html)
+    iii) [County Area / FIPS Codes](dprep_county.html)
+    iv) [Herbicide Active Ingredients](dprep_ingredient.html)
+
+2. Data Analysis
+    i) [Patterns of Herbicide Use](analysis.html)
+    ii) [Changes in Land Cover](analysis_land.html)
+    iii) [Identifying Herbicide Active Ingredients](analysis_ingredient.html)
+    
+3. Results and Discussions
+    i) [Herbicide Use and Land Cover](randd.html)
+    ii) [Herbicide Active Ingredients](results_ingredient.html)
+
+***
+
+
+[^1]: Semmens, B.X. et al. (2016). Quasi-extinction risk and population targets for the Eastern, migratory population of monarch butterflies *(Danaus plexippus). Scientific Reports 6:23265. 
+[^2]: Thogmartin, WE. et al. (2017) Monarch butterfly population decline in North America: identifying the threatening processes. *Royal Society Open Science*.
+[^3]: Inamine, H. et al. (2016) Linking the continental migratory cycle of the monarch butterfly to understand its population decline.
+[^4]: Picture taken from [texasbutterflyranch.com](https://texasbutterflyranch.com/2017/08/15/butterflies-without-borders-monarch-butterfly-and-pollinator-festival-set-for-october/). Graphic credit : Nicolas Rivard 
+

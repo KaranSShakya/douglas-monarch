@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Data Preparation</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Monarch Project</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Data Preparation
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dprep.html">Herbicide Use</a>
+    </li>
+    <li>
+      <a href="dprep_land.html">Land Cover</a>
+    </li>
+    <li>
+      <a href="dprep_county.html">County/FIPS Code</a>
+    </li>
+    <li>
+      <a href="dprep_ingredient.html">Active Ingredient</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Data Analysis
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="analysis.html">Patterns of Herbicide Use</a>
+    </li>
+    <li>
+      <a href="analysis_land.html">Changes in Land Cover</a>
+    </li>
+    <li>
+      <a href="analysis_ingredient.html">Identifying Active Ingredients</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Results and Discussion
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="randd.html">Herbicide Use and Land Cover</a>
+    </li>
+    <li>
+      <a href="results_ingredient.html">Herbicide Active Ingredient</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="about.html">About</a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Data Preparation</h1>
+
+</div>
+
+
+<ol style="list-style-type: decimal">
+<li>Data Preparation
+<ol style="list-style-type: lower-roman">
+<li><a href="dprep.html">Herbicide Use</a></li>
+<li><a href="dprep_land.html">Land Cover</a></li>
+<li><a href="dprep_county.html">County Area / FIPS Codes</a></li>
+<li><a href="dprep_ingredient.html">Herbicide Active Ingredients</a></li>
+</ol></li>
+</ol>
+<div id="ii-land-cover" class="section level1">
+<h1><strong>ii) Land Cover</strong></h1>
+<p>Downloading, tabulating, and cleaning the land cover data was done with the use of <code>ArcGIS</code>, a software used for analysing spatial informations, and R. Preparing the land cover data into a table so that it could be compared with the herbicide used in acres took 4 steps in ArcGIs, and a final step in R:</p>
+<ul>
+<li>Importing Land Cover data into ArcGIS</li>
+<li>Clipping the Land Cover data to filter relevant states only</li>
+<li>Calculating amount of county that was covered by a perticular land cover.</li>
+<li>Exporting the results into an excel file.</li>
+<li>Cleaning and Combining Data (done in R)</li>
+</ul>
+<hr />
+<div id="a.-importing-land-cover-data-into-arcgis" class="section level3">
+<h3>a. Importing Land Cover data into ArcGIS</h3>
+<p>The land cover data used in this project was prepared by the ‘<a href="https://landcover-modeling.cr.usgs.gov/projects.php">United States Geological Survey (USGS)</a>’. The land cover for the years 1997, 2002, 2007, and 2012, were complied by downloading two links: <em>CONUS Historical</em> and <em>CONUS A1B</em>. The <em>.tif</em> extension files were opened in ArcGIS.</p>
+<hr />
+</div>
+<div id="b.-clipping-the-land-cover-data-to-filter-relevant-states-only" class="section level3">
+<h3>b. Clipping the Land Cover data to filter relevant states only</h3>
+<p>Additionally, to help with filtering the land cover data, a <em>U.S County</em> shapefile was downloaded. (Link) This shapefile was opened in ArcGIS and using the <strong>Select by Attribute</strong> tool, the 7 states (TX, OK, AR, LA, MO, NE, KS) were selected and made into a new shapefile:</p>
+<div class="figure">
+<img src="clipped_site.png" alt="The U.S Counties after the sites were selected and made into a new shapefile" />
+<p class="caption"><em>The U.S Counties after the sites were selected and made into a new shapefile</em></p>
+</div>
+<p>The new shapefile of the selected states was then used to <em>clip</em> the <em>.tif</em> extension raster files of all the years by the ArcGIS <strong>Clip(Raster)</strong> tool. Now, only the land cover data of the relevant states was available for further analysis.</p>
+<div class="figure">
+<img src="clipped_lc.png" alt="Land cover data before and after Clip" />
+<p class="caption"><em>Land cover data before and after ‘Clip’</em></p>
+</div>
+<hr />
+</div>
+<div id="c.-calculating-amount-of-county-that-was-covered-by-a-perticular-land-cover." class="section level3">
+<h3>c. Calculating amount of county that was covered by a perticular land cover.</h3>
+<p>To calculate the amount of land cover in each state, the <strong>Tabulate Area</strong> tool in ArcGIS was used. By using the U.S County Data and the clipped land cover data, this tool helped identify how much of each land cover was present in these counties. <strong>Tabulate Area</strong> was used to calculate land cover for all the selected years individually. These values were stored in a Geodatabase as <em>tables</em>. The column <em>FIPS</em> helped distinguish counties.</p>
+<p>It is important to note that the land cover, in ArcGIS, is distinguised by the column name <em>VALUE_</em>. By comparing the value number with the information provided in the metadata, the following list was formed:</p>
+<ul>
+<li><strong>VALUE_1</strong> = Water</li>
+<li><strong>VALUE_2</strong> = Developed</li>
+<li><strong>VALUE_3</strong> = Mechanically Disturbed National Forests</li>
+<li><strong>VALUE_4</strong> = Mechanically Disturbed Other Public Lands</li>
+<li><strong>VALUE_5</strong> = Mechanically Disturbed Private</li>
+<li><strong>VALUE_6</strong> = Minig</li>
+<li><strong>VALUE_7</strong> = Barren</li>
+<li><strong>VALUE_8</strong> = Deciduous Forest</li>
+<li><strong>VALUE_9</strong> = Evergreen Forest</li>
+<li><strong>VALUE_10</strong> = Mixed Forest</li>
+<li><strong>VALUE_11</strong> = Grassland</li>
+<li><strong>VALUE_12</strong> = Shrubland</li>
+<li><strong>VALUE_13</strong> = Cropland</li>
+<li><strong>VALUE_14</strong> = Hay/Pasture land</li>
+<li><strong>VALUE_15</strong> = Herbaceous land</li>
+<li><strong>VALUE_16</strong> = Herbaceous Wetland</li>
+<li><strong>VALUE_17</strong> = Perennial Ice/Snow</li>
+</ul>
+<p>In addition to this, ArcGIS automatically corresponded the <em>NA</em> values in the map with a black color.</p>
+<ul>
+<li><strong>VALUE_0</strong> = NA</li>
+</ul>
+<hr />
+</div>
+<div id="d.-exporting-the-results-into-an-excel-file." class="section level3">
+<h3>d. Exporting the results into an excel file.</h3>
+<p>The tabulated area with the land cover data is stored as a table in the Geodatabase of ArcGIS. In order to convert this into an excel file that R can read, the <strong>Table to Excel (Conversion)</strong> tool was used. The tabulated area for all the years were convereted into excel files. The excel files were named: <strong>landcover_97</strong>, <strong>landcover_02</strong>, <strong>landcover_07</strong>, and <strong>landcover_12</strong>.</p>
+<hr />
+</div>
+<div id="e.-cleaning-and-combining-data" class="section level3">
+<h3>e. Cleaning and Combining Data</h3>
+<p>Before analying the results produced in ArcGIS, the land cover excel files were organized in R. The excel files of each year were imported:</p>
+<pre class="r"><code>lc97 &lt;- read_excel(&quot;../data/big_data/landcover_97.xlsx&quot;)
+lc02 &lt;- read_excel(&quot;../data/big_data/landcover_02.xlsx&quot;)
+lc07 &lt;- read_excel(&quot;../data/big_data/landcover_07.xlsx&quot;)
+lc12 &lt;- read_excel(&quot;../data/big_data/landcover_12.xlsx&quot;)</code></pre>
+<p>The column names that reflect the land cover properties are in <em>VALUE_</em> these column names needed to be changed to reflect correct land cover names. This was done by creating a function to change the column names.</p>
+<pre class="r"><code>col_rename &lt;- function(x) {rename(x, c(&quot;OBJECTID&quot;=&quot;objectid&quot;,&quot;FIPS&quot;=&quot;fips&quot;,&quot;VALUE_0&quot;=&quot;null&quot;,&quot;VALUE_1&quot;=&quot;water&quot;, &quot;VALUE_2&quot;=&quot;developed&quot;,&quot;VALUE_3&quot;=&quot;disturbed_national_forests&quot;,
+                                       &quot;VALUE_4&quot;=&quot;disturbed_other_public_lands&quot;,&quot;VALUE_5&quot;=&quot;disturbed_private&quot;,
+                                       &quot;VALUE_6&quot;=&quot;minig&quot;,&quot;VALUE_7&quot;=&quot;barren&quot;,&quot;VALUE_8&quot;=&quot;deciduous_forest&quot;,
+                                       &quot;VALUE_9&quot;=&quot;evergreen_forest&quot;,&quot;VALUE_10&quot;=&quot;mixed_forest&quot;,&quot;VALUE_11&quot;=&quot;grassland&quot;,
+                                       &quot;VALUE_12&quot;=&quot;shrubland&quot;,&quot;VALUE_13&quot;=&quot;cropland&quot;,&quot;VALUE_14&quot;=&quot;hay_pasture_land&quot;,                                           &quot;VALUE_15&quot;=&quot;herbaceous_wetland&quot;,&quot;VALUE_16&quot;=&quot;woody_wetland&quot;,
+                                       &quot;VALUE_17&quot;=&quot;perennial_ice/snow&quot;))}</code></pre>
+<p>The function was then used to change the column names of all the land cover data years. Extra columns: <em>objectid</em>, and <em>null</em> were removed. A new column <em>sum</em>, which was the total land cover value was addded. This would be used as a normalizing variable.</p>
+<pre class="r"><code>lc97 &lt;- lc97 %&gt;% 
+  col_rename() %&gt;% 
+  select(-objectid, -null) %&gt;%
+  mutate(sum=select(., `water`:`perennial_ice/snow`) %&gt;%
+           apply(1, sum, na.rm=TRUE))
+lc02 &lt;- lc02 %&gt;% 
+  col_rename() %&gt;% 
+  select(-objectid, -null) %&gt;%
+  mutate(sum=select(., `water`:`perennial_ice/snow`) %&gt;%
+           apply(1, sum, na.rm=TRUE))
+lc07 &lt;- lc07 %&gt;% 
+  col_rename() %&gt;% 
+  select(-objectid, -null) %&gt;%
+  mutate(sum=select(., `water`:`perennial_ice/snow`) %&gt;%
+           apply(1, sum, na.rm=TRUE))
+lc12 &lt;- lc12 %&gt;% 
+  col_rename() %&gt;% 
+  select(-objectid, -null) %&gt;%
+  mutate(sum=select(., `water`:`perennial_ice/snow`) %&gt;%
+           apply(1, sum, na.rm=TRUE))</code></pre>
+<p>The final data frame were then exported as excel. This final dataset named: <strong>lc97.xlsx</strong>, <strong>lc02.xlsx</strong>, <strong>lc07.xlsx</strong>, and <strong>lc12.xlsx</strong>. Each of this excel file had land cover values for each county (county were identified by FIPS code). The numeric values are in number of pixel.</p>
+<hr />
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

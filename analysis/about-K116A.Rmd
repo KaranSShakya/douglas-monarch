@@ -1,5 +1,5 @@
 ---
-title: "About"
+title: "Ab"
 output:
   workflowr::wflow_html:
     toc: false
@@ -7,7 +7,7 @@ output:
 
 <rough>
 
-**Project Title:** Threats to Monarch Migration : A Look into the Changes in Herbicide Use and Land Cover 
+**Project Title:** Threats to Monarch Migration : Changes in Herbicide Use and Land Cover 
 
 **Lead Author:** Karan S. Shakya, Dickinson College, 2020
 
@@ -19,5 +19,6 @@ output:
 
 **Abstract:**
 
-The population of monarch butterflies is declining, and one of the hypothesis explaining this trend is that the monarch butterflies are unable to complete their migration. This project attemps to identify patterns of herbicide use, changes in herbicide active ingredinets, and changes to land use, and how these factors could act as a threat to monarch migration. 
+Monarch butterfly..
+
 

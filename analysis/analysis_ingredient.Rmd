@@ -1,0 +1,194 @@
+---
+title: "Data Analysis"
+output:
+  workflowr::wflow_html:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+2. Data Analysis
+    i) [Patterns of Herbicide Use](analysis.html)
+    ii) [Changes in Land Cover](analysis_land.html)
+    iii) [Identifying Herbicide Active Ingredients](analysis_ingredient.html)
+    
+##**This section has been omitted**
+
+#**iii) Identifying Herbicide Active Ingredients**
+```{r message=FALSE, echo=FALSE}
+library(tidyverse)
+library(plyr)
+library(dplyr)
+library(png)
+library(grid)
+library(readxl)
+library(reshape2)
+```
+
+The excel file prepared in the *Data Preparation* was imported again. 
+```{r}
+join_herb2 <- read_excel("../data/big_data/join_herb2.xlsx")
+```
+
+Aggregating for **Cropland** and **Hay/Pasture Land**.
+```{r}
+ing_sum <- join_herb2 %>% 
+  select(-Units, -compound_std, -category) %>% 
+  mutate(crop_sum=select(., `Corn`:`Alfalfa`, `Other_crops`) %>% 
+           apply(1, sum, na.rm=TRUE))
+```
+
+###a. Active Ingredient percent change from 1997 to 2012
+
+Just selecting the ingredients. First one for 1997
+```{r}
+ing97_only <- ing_sum %>% 
+  select(-1:-3,-6:-13,-15) %>% 
+  filter(Year == 1997) %>% 
+  ddply(., "Compound", numcolwise(sum), na.rm=TRUE)
+
+names(ing97_only)[3] <- "hay97"  
+names(ing97_only)[4] <- "crop97"
+```
+
+```{r}
+ing12_only <- ing_sum %>% 
+  select(-1:-3,-6:-13,-15) %>% 
+  filter(Year == 2012) %>% 
+  ddply(., "Compound", numcolwise(sum), na.rm=TRUE)
+
+names(ing12_only)[3] <- "hay12"  
+names(ing12_only)[4] <- "crop12"
+```
+
+Combining the two dataframes
+```{r}
+ing_97_12 = merge(x=ing97_only, y=ing12_only, by="Compound")
+```
+
+Calculations
+```{r}
+ing_97_12 <- ing_97_12 %>% 
+  select(-2,-5) %>% 
+  mutate(sum97=hay97+crop97, sum12=hay12+crop12, ing_per=((sum12-sum97)/sum97)*100, crop_per=((crop12-crop97)/crop97)*100, hay_per=((hay12-hay97)/hay97)*100, crop_diff=crop12-crop97, hay_diff=hay12-hay97)
+```
+
+***
+
+###b. Active Ingredient Map
+The data downloaded from the *Data Preparation* section was imported into R.
+```{r}
+pest_97 <- read_excel("../data/big_data/pest_97.xlsx")
+pest_12 <- read_excel("../data/big_data/pest_12.xlsx")
+```
+
+Also the *county_area*, which was prepared previously, was imported. This would help in normalizing the values.
+```{r}
+county <- read_excel("../data/big_data/county_area.xlsx")
+```
+
+Filterout only relevant columns: 
+```{r}
+pest_97 <- pest_97 %>%
+  select(1, 5, 6)
+names(pest_97)[3] <- "lowkg_97"
+pest_12 <- pest_12 %>%
+  select(1, 5, 6)
+names(pest_12)[3] <- "lowkg_12"
+county <- county %>% 
+  select(6,7)
+names(county)[1] <- "fips"
+```
+
+Cannot be converted to excel, maybe too many rows. So trying to aggregate them now. 
+```{r}
+pest97_glyphosate <- pest_97 %>% 
+  filter(COMPOUND=="GLYPHOSATE") %>% 
+  ddply(.,"fips", numcolwise(sum), na.rm=TRUE)
+names(pest97_glyphosate)[2] <- "glyphosate97"
+
+pest12_glyphosate <- pest_12 %>% 
+  filter(COMPOUND=="GLYPHOSATE") %>% 
+  ddply(.,"fips", numcolwise(sum), na.rm=TRUE)
+names(pest12_glyphosate)[2] <- "glyphosate12"
+```
+
+Joining the two tables
+```{r}
+glyphosate=merge(x=pest97_glyphosate, y=pest12_glyphosate, by="fips")
+glyphosate=merge(x=glyphosate, y=county, by="fips")
+```
+ 
+ Normalizing
+```{r}
+glyphosate <- glyphosate %>% 
+  mutate(change=((glyphosate12-glyphosate97)/area_acre)*100)
+```
+
+Similarly, same step was done for 24_D, Atrazine, Dicamba, and Paraquat. 
+```{r, echo=FALSE}
+pest97_24_D <- pest_97 %>% 
+  filter(COMPOUND=="2,4-D") %>% 
+  ddply(.,"fips", numcolwise(sum), na.rm=TRUE)
+names(pest97_24_D)[2] <- "24_D97"
+
+pest12_24_D <- pest_12 %>% 
+  filter(COMPOUND=="2,4-D") %>% 
+  ddply(.,"fips", numcolwise(sum), na.rm=TRUE)
+names(pest12_24_D)[2] <- "24_D12"
+
+i24_D=left_join(pest97_24_D, pest12_24_D, by="fips")
+i24_D=left_join(i24_D, county, by="fips")
+```
+
+```{r, echo=FALSE}
+pest97atrazine <- pest_97 %>% 
+  filter(COMPOUND=="ATRAZINE") %>% 
+  ddply(.,"fips", numcolwise(sum), na.rm=TRUE)
+names(pest97atrazine)[2] <- "24_D97"
+
+pest12atrazine <- pest_12 %>% 
+  filter(COMPOUND=="ATRAZINE") %>% 
+  ddply(.,"fips", numcolwise(sum), na.rm=TRUE)
+names(pest12atrazine)[2] <- "24_D12"
+
+atrazine=left_join(pest97atrazine, pest12atrazine, by="fips")
+atrazine=left_join(atrazine, county, by="fips")
+```
+
+```{r, echo=FALSE}
+pest97dicamba <- pest_97 %>% 
+  filter(COMPOUND=="DICAMBA") %>% 
+  ddply(.,"fips", numcolwise(sum), na.rm=TRUE)
+names(pest97dicamba)[2] <- "24_D97"
+
+pest12dicamba <- pest_12 %>% 
+  filter(COMPOUND=="DICAMBA") %>% 
+  ddply(.,"fips", numcolwise(sum), na.rm=TRUE)
+names(pest12dicamba)[2] <- "24_D12"
+
+dicamba=left_join(pest97dicamba, pest12dicamba, by="fips")
+dicamba=left_join(dicamba, county, by="fips")
+```
+
+```{r, echo=FALSE}
+pest97paraquat <- pest_97 %>% 
+  filter(COMPOUND=="PARAQUAT") %>% 
+  ddply(.,"fips", numcolwise(sum), na.rm=TRUE)
+names(pest97paraquat)[2] <- "24_D97"
+
+pest12paraquat <- pest_12 %>% 
+  filter(COMPOUND=="PARAQUAT") %>% 
+  ddply(.,"fips", numcolwise(sum), na.rm=TRUE)
+names(pest12paraquat)[2] <- "24_D12"
+
+paraquat=left_join(pest97paraquat, pest12paraquat, by="fips")
+paraquat=left_join(paraquat, county, by="fips")
+```
+
+
+***
+
+

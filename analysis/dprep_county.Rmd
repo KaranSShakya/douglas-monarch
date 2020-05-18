@@ -1,0 +1,52 @@
+---
+title: "Data Preparation"
+output:
+  workflowr::wflow_html:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1. Data Preparation
+    i) [Herbicide Use](dprep.html)
+    ii) [Land Cover](dprep_land.html)
+    iii) [County Area / FIPS Codes](dprep_county.html)
+    iv) [Herbicide Active Ingredients](dprep_ingredient.html)
+    
+    
+#**iii) County Area / FIPS Code**
+
+```{r message=FALSE, echo=FALSE}
+library(tidyverse)
+library(plyr)
+library(dplyr)
+library(png)
+library(grid)
+library(readxl)
+```
+
+To help normalize the *herbicide use* and the *land cover* data with the area of the county, another data with county area (acres) was also prepared. This data had the *FIPS* code, which would later be used to join data and create maps in ArcGIS.
+
+Calculating the county area in acres was done through ArcGIS. First the shapefile with all relevant states was opened. Calculations, such as finding out the acres of a county, can only be done in an *projected coordinate system* which was set to: **USA_Contiguous_Albers_Equal_Area_Conic**. 
+
+Another column in the *attribute table* of the shapefile was added using the **Add Field** tool under **Table Options**. The new columns was named *area_acres* and using another tool: **Calculate Geometry**, the area of each county was calculate . The resulting table was then saved into a *geodatabase* and then exported to an excel file using the **Table to Excel (Conversion)** tool. 
+
+Cleaning this data was then done through R.
+The newly created table was imported.
+```{r}
+county <- read_excel("../data/big_data/county_area.xlsx")
+```
+Only the relevant columns: *NAME*, *FIPS*, and *area_acre* were selected. 
+```{r}
+county <- county %>% 
+  select(NAME, FIPS, area_acre)
+```
+*FIPS* was then renamed to *fips* so it would match the key's of other table. 
+```{r}
+names(county)[2] <- "fips"
+```
+Finally this *county* data was exported to excel to be used in analysis. The output excel was named **county.xlsx**.    
+
+***

@@ -1,0 +1,139 @@
+---
+title: "Data Preparation"
+output:
+  workflowr::wflow_html:
+    toc: true
+    toc_float:
+      collapsed: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+1. Data Preparation
+    i) [Herbicide Use](dprep.html)
+    ii) [Land Cover](dprep_land.html)
+    iii) [County Area / FIPS Codes](dprep_county.html)
+    iv) [Herbicide Active Ingredients](dprep_ingredient.html)
+    
+    
+#**ii) Land Cover**
+
+```{r message=FALSE, echo=FALSE}
+library(tidyverse)
+library(plyr)
+library(dplyr)
+library(png)
+library(grid)
+library(readxl)
+library(imager)
+```
+
+Downloading, tabulating, and cleaning the land cover data was done with the use of `ArcGIS`, a software used for analysing spatial informations, and R. Preparing the land cover data into a table so that it could be compared with the herbicide used in acres took 4 steps in ArcGIs, and a final step in R:
+
+* Importing Land Cover data into ArcGIS
+* Clipping the Land Cover data to filter relevant states only
+* Calculating amount of county that was covered by a perticular land cover. 
+* Exporting the results into an excel file. 
+* Cleaning and Combining Data (done in R)
+
+***
+
+###a. Importing Land Cover data into ArcGIS
+The land cover data used in this project was prepared by the '[United States Geological Survey (USGS)](https://landcover-modeling.cr.usgs.gov/projects.php)'. The land cover for the years 1997, 2002, 2007, and 2012, were complied by downloading two links: *CONUS Historical* and *CONUS A1B*. The *.tif* extension files were opened in ArcGIS. 
+
+***
+
+###b. Clipping the Land Cover data to filter relevant states only
+Additionally, to help with filtering the land cover data, a *U.S County* shapefile was downloaded. (Link) This shapefile was opened in ArcGIS and using the **Select by Attribute** tool, the 7 states (TX, OK, AR, LA, MO, NE, KS) were selected and made into a new shapefile:
+
+![*The U.S Counties after the sites were selected and made into a new shapefile*](clipped_site.png)
+
+The new shapefile of the selected states was then used to *clip* the *.tif* extension raster files of all the years by the ArcGIS **Clip(Raster)** tool. Now, only the land cover data of the relevant states was available for further analysis.
+
+![*Land cover data before and after 'Clip'*](clipped_lc.png)
+
+***
+
+###c. Calculating amount of county that was covered by a perticular land cover. 
+To calculate the amount of land cover in each state, the **Tabulate Area** tool in ArcGIS was used. By using the U.S County Data and the clipped land cover data, this tool helped identify how much of each land cover was present in these counties. **Tabulate Area** was used to calculate land cover for all the selected years individually. These values were stored in a Geodatabase as *tables*. The column *FIPS* helped distinguish counties.   
+
+It is important to note that the land cover, in ArcGIS, is distinguised by the column name *VALUE_*. By comparing the value number with the information provided in the metadata, the following list was formed:
+
+* **VALUE_1** = Water 
+* **VALUE_2** = Developed
+* **VALUE_3** = Mechanically Disturbed National Forests
+* **VALUE_4** = Mechanically Disturbed Other Public Lands
+* **VALUE_5** = Mechanically Disturbed Private
+* **VALUE_6** = Minig
+* **VALUE_7** = Barren
+* **VALUE_8** = Deciduous Forest
+* **VALUE_9** = Evergreen Forest
+* **VALUE_10** = Mixed Forest
+* **VALUE_11** = Grassland
+* **VALUE_12** = Shrubland
+* **VALUE_13** = Cropland
+* **VALUE_14** = Hay/Pasture land
+* **VALUE_15** = Herbaceous land
+* **VALUE_16** = Herbaceous Wetland
+* **VALUE_17** = Perennial Ice/Snow
+
+In addition to this, ArcGIS automatically corresponded the *NA* values in the map with a black color.
+
+* **VALUE_0** = NA
+
+***
+
+###d. Exporting the results into an excel file.
+The tabulated area with the land cover data is stored as a table in the Geodatabase of ArcGIS. In order to convert this into an excel file that R can read, the **Table to Excel (Conversion)** tool was used. The tabulated area for all the years were convereted into excel files. The excel files were named: **landcover_97**, **landcover_02**, **landcover_07**, and **landcover_12**.
+
+***
+
+###e. Cleaning and Combining Data
+Before analying the results produced in ArcGIS, the land cover excel files were organized in R. The excel files of each year were imported: 
+```{r}
+lc97 <- read_excel("../data/big_data/landcover_97.xlsx")
+lc02 <- read_excel("../data/big_data/landcover_02.xlsx")
+lc07 <- read_excel("../data/big_data/landcover_07.xlsx")
+lc12 <- read_excel("../data/big_data/landcover_12.xlsx")
+```
+
+The column names that reflect the land cover properties are in *VALUE_* these column names needed to be changed to reflect correct land cover names. This was done by creating a function to change the column names. 
+```{r}
+col_rename <- function(x) {rename(x, c("OBJECTID"="objectid","FIPS"="fips","VALUE_0"="null","VALUE_1"="water", "VALUE_2"="developed","VALUE_3"="disturbed_national_forests",
+                                       "VALUE_4"="disturbed_other_public_lands","VALUE_5"="disturbed_private",
+                                       "VALUE_6"="minig","VALUE_7"="barren","VALUE_8"="deciduous_forest",
+                                       "VALUE_9"="evergreen_forest","VALUE_10"="mixed_forest","VALUE_11"="grassland",
+                                       "VALUE_12"="shrubland","VALUE_13"="cropland","VALUE_14"="hay_pasture_land",                                           "VALUE_15"="herbaceous_wetland","VALUE_16"="woody_wetland",
+                                       "VALUE_17"="perennial_ice/snow"))}
+```
+
+The function was then used to change the column names of all the land cover data years. Extra columns: *objectid*, and *null* were removed. A new column *sum*, which was the total land cover value was addded. This would be used as a normalizing variable.  
+```{r}
+lc97 <- lc97 %>% 
+  col_rename() %>% 
+  select(-objectid, -null) %>%
+  mutate(sum=select(., `water`:`perennial_ice/snow`) %>%
+           apply(1, sum, na.rm=TRUE))
+lc02 <- lc02 %>% 
+  col_rename() %>% 
+  select(-objectid, -null) %>%
+  mutate(sum=select(., `water`:`perennial_ice/snow`) %>%
+           apply(1, sum, na.rm=TRUE))
+lc07 <- lc07 %>% 
+  col_rename() %>% 
+  select(-objectid, -null) %>%
+  mutate(sum=select(., `water`:`perennial_ice/snow`) %>%
+           apply(1, sum, na.rm=TRUE))
+lc12 <- lc12 %>% 
+  col_rename() %>% 
+  select(-objectid, -null) %>%
+  mutate(sum=select(., `water`:`perennial_ice/snow`) %>%
+           apply(1, sum, na.rm=TRUE))
+```
+
+The final data frame were then exported as excel. This final dataset  named: **lc97.xlsx**, **lc02.xlsx**, **lc07.xlsx**, and **lc12.xlsx**. Each of this excel file had land cover values for each county (county were identified by FIPS code). The numeric values are in number of pixel.    
+
+***

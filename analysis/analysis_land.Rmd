@@ -1,0 +1,319 @@
+---
+title: "Data Analysis"
+output:
+  workflowr::wflow_html:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+2. Data Analysis
+    i) [Patterns of Herbicide Use](analysis.html)
+    ii) [Changes in Land Cover](analysis_land.html)
+    iii) [Identifying Herbicide Active Ingredients](analysis_ingredient.html)
+    
+    
+#**ii) Changes in Land Cover**
+```{r message=FALSE, echo=FALSE}
+library(tidyverse)
+library(plyr)
+library(dplyr)
+library(png)
+library(grid)
+library(readxl)
+library(reshape2)
+```
+
+All the files created in *Data Preparation* was imported. While the focus on analysis in this page was with land cover changes, the other files would help with joining and normalizing the dataframes.
+```{r}
+lc97 <- read_excel("../data/big_data/lc97.xlsx")
+lc02 <- read_excel("../data/big_data/lc02.xlsx")
+lc07 <- read_excel("../data/big_data/lc07.xlsx")
+lc12 <- read_excel("../data/big_data/lc12.xlsx")
+county <- read_excel("../data/big_data/county.xlsx")
+herbicide_use <- read_excel("../data/big_data/herbicide_use.xlsx")
+```
+
+Out of the 17 land cover properties, 4 were selected. These 4 land cover were estimated to influence the availability of nectar for the moanrchs:
+
+* **Grassland**
+* **Shrubland**
+* **Cropland**
+* **Hay/Pasture**
+
+***
+
+###a. Calculating Percent of Land cover
+Before calculating the changes of land cover of the selected land cover properties, all the data from differnet land cover needed to be organized into one table.
+
+The land cover dataframes were cleaned.
+```{r}
+lc97_select <- lc97 %>% 
+  select(2, 13:16, 20)
+lc02_select <- lc02 %>% 
+  select(2, 13:16, 20)
+lc07_select <- lc07 %>% 
+  select(2, 13:16, 20)
+lc12_select <- lc12 %>% 
+  select(2, 13:16, 20)
+```
+
+The land cover properties were then normalized by the *sum*.
+```{r}
+lc97_select <- lc97_select %>% 
+  mutate(grass97=(grassland/sum)*100, shrub97=(shrubland/sum)*100, crop97=(cropland/sum)*100, hay97=(hay_pasture_land/sum)*100) %>% 
+  select(1, 7:10)
+lc02_select <- lc02_select %>% 
+  mutate(grass02=(grassland/sum)*100, shrub02=(shrubland/sum)*100, crop02=(cropland/sum)*100, hay02=(hay_pasture_land/sum)*100) %>% 
+  select(1, 7:10)
+lc07_select <- lc07_select %>% 
+  mutate(grass07=(grassland/sum)*100, shrub07=(shrubland/sum)*100, crop07=(cropland/sum)*100, hay07=(hay_pasture_land/sum)*100) %>% 
+  select(1, 7:10)
+lc12_select <- lc12_select %>% 
+  mutate(grass12=(grassland/sum)*100, shrub12=(shrubland/sum)*100, crop12=(cropland/sum)*100, hay12=(hay_pasture_land/sum)*100) %>% 
+  select(1, 7:10)
+```
+
+Finally these dataframed were merged into one **lc4**. 
+```{r}
+lc4 <- merge(x=lc97_select, y=lc02_select, by="fips")
+lc4 <- merge(x=lc4, y=lc07_select, by="fips")
+lc4 <- merge(x=lc4, y=lc12_select, by="fips")
+```
+
+This merged data was then merged again to the *county* table so that all the percent value could be represented in acres. 
+```{r}
+lc4 <- merge(x=county, y=lc4, by="fips")
+```
+
+The perent values were then calculated to show land cover properties in acres.
+```{r}
+lc4_acre <- lc4 %>%
+  mutate(g97_acre=(grass97/100)*area_acre, s97_acre=(shrub97/100)*area_acre, c97_acre=(crop97/100)*100, h97_acre=(hay97/100)*area_acre, g02_acre=(grass02/100)*area_acre, s02_acre=(shrub02/100)*area_acre, c02_acre=(crop02/100)*100, h02_acre=(hay02/100)*area_acre, g07_acre=(grass07/100)*area_acre, s07_acre=(shrub07/100)*area_acre, c07_acre=(crop07/100)*100, h07_acre=(hay07/100)*area_acre, g12_acre=(grass12/100)*area_acre, s12_acre=(shrub12/100)*area_acre, c12_acre=(crop12/100)*100, h12_acre=(hay12/100)*area_acre) %>% 
+  select(1,3,21:36)
+```
+
+Now that all land cover properties were shown in acres, each land cover were made into its own data frams so that further analysis could take place.
+```{r}
+grass <- lc4_acre %>% 
+  select(1,2,3,7,11,15)
+shrub <- lc4_acre %>% 
+  select(1,2,4,8,12,16)
+crop <- lc4_acre %>% 
+  select(1,2,5,9,13,17)
+hay <- lc4_acre %>% 
+  select(1,2,6,10,14,18)
+```
+
+***
+
+###b. Change from 1997 to 2012
+Like herbicide use, the change from 1997 to 2012 was done for all the chosen land cover.
+```{r}
+grass <- grass %>% 
+  mutate(grass_chg=(g12_acre-g97_acre))
+shrub <- shrub %>% 
+  mutate(shrub_chg=(s12_acre-s97_acre))
+crop <- crop %>% 
+  mutate(crop_chg=(c12_acre-c97_acre))
+hay <- hay %>% 
+  mutate(hay_chg=(h12_acre-h97_acre))
+```
+
+This change was joined with *county* dataframe so that each change could be normalized with the size of the county. 
+```{r}
+grass1 <- merge(x=county, y=grass, by="fips") 
+shrub1 <- merge(x=county, y=shrub, by="fips")
+crop1 <- merge(x=county, y=crop, by="fips")
+hay1 <- merge(x=county, y=hay, by="fips")
+```
+
+The change was then normalized. 
+```{r}
+grass1 <- grass1 %>% 
+  mutate(lg_grassch=(grass_chg/area_acre)*100)
+shrub1 <- shrub1 %>% 
+  mutate(lg_shrubch=(shrub_chg/area_acre)*100)
+crop1 <- crop1 %>% 
+  mutate(lg_cropch=(crop_chg/area_acre)*100)
+hay1 <- hay1 %>% 
+  mutate(lg_haych=(hay_chg/area_acre)*100)
+```
+
+***
+```{r, echo=FALSE}
+herb_acre <- merge(x=herbicide_use, y=county, by="fips")
+```
+```{r, echo=FALSE}
+herb_acre <- herb_acre %>% 
+  mutate(herb97_acre=herbicide_97/area_acre, herb02_acre=herbicide_02/area_acre, herb07_acre=herbicide_07/area_acre, herb12_acre=herbicide_12/area_acre) %>% 
+  select(1,3,4,11:15)
+```
+```{r, echo=FALSE}
+herb_acre1 <- herb_acre %>% 
+  mutate(herb_change=((herb12_acre-herb97_acre)/herb97_acre)*100)
+```
+```{r, echo=FALSE}
+herb_state <- ddply(herbicide_use, "State", numcolwise(sum), na.rm=TRUE)
+```
+```{r, echo=FALSE}
+state_acre = ddply(herb_acre, "State", numcolwise(sum))
+state_acre <- state_acre %>% 
+  select(1,2)
+```
+```{r, echo=FALSE}
+herb_state = merge(x=herb_state, y=state_acre, by="State")
+```
+```{r, echo=FALSE}
+herb_state <- herb_state %>% 
+  mutate(herb97_st=herbicide_97/area_acre, herb02_st=herbicide_02/area_acre, herb07_st=herbicide_07/area_acre, herb12_st=herbicide_12/area_acre)
+```
+
+
+###c. Trend in land cover changes
+The land cover changes were also prepared to be analized in a state level. The dataframe previously created was joined. 
+```{r}
+state_join <- herbicide_use %>% 
+  select(2,3)
+```
+
+The states were joined with the land cover dataframe. These were joined by the key **fips**. 
+```{r}
+grass_state <- merge(x=state_join, y=grass, by="fips") 
+shrub_state <- merge(x=state_join, y=shrub, by="fips")
+crop_state <- merge(x=state_join, y=crop, by="fips")
+hay_state <- merge(x=state_join, y=hay, by="fips")
+```
+
+The land cover properties were aggregate by summing these value in a state level. 
+```{r}
+grass_state <- ddply(grass_state, "State", numcolwise(sum))
+shrub_state <- ddply(shrub_state, "State", numcolwise(sum))
+crop_state <- ddply(crop_state, "State", numcolwise(sum))
+hay_state <- ddply(hay_state, "State", numcolwise(sum))
+```
+
+The values were normalized with the size of the state.
+```{r}
+grass_state <- merge(x=state_acre, y=grass_state, by="State")
+shrub_state <- merge(x=state_acre, y=shrub_state, by="State")
+crop_state <- merge(x=state_acre, y=crop_state, by="State")
+hay_state <- merge(x=state_acre, y=hay_state, by="State")
+```
+
+A percent change was calculated:
+```{r}
+grass_state <- grass_state %>%  
+  mutate(g97_per=(g97_acre/area_acre)*100, g02_per=(g02_acre/area_acre)*100, g07_per=(g07_acre/area_acre)*100, g12_per=(g12_acre/area_acre)*100)
+shrub_state <- shrub_state %>%  
+  mutate(s97_per=(s97_acre/area_acre)*100, s02_per=(s02_acre/area_acre)*100, s07_per=(s07_acre/area_acre)*100, s12_per=(s12_acre/area_acre)*100)
+crop_state <- crop_state %>%  
+  mutate(c97_per=(c97_acre/area_acre)*100, c02_per=(c02_acre/area_acre)*100, c07_per=(c07_acre/area_acre)*100, c12_per=(c12_acre/area_acre)*100)
+hay_state <- hay_state %>%  
+  mutate(h97_per=(h97_acre/area_acre)*100, h02_per=(h02_acre/area_acre)*100, h07_per=(h07_acre/area_acre)*100, h12_per=(h12_acre/area_acre)*100)
+```
+
+Calculating percent change from base year 1997. 
+```{r}
+grass_state1 <- grass_state %>%
+  mutate(g97_base=0, g02_base=g02_per-g97_per, g07_base=g07_per-g97_per, g12_base=g12_per-g97_per)
+shrub_state1 <- shrub_state %>%
+  mutate(s97_base=0, s02_base=s02_per-s97_per, s07_base=s07_per-s97_per, s12_base=s12_per-s97_per)
+crop_state1 <- crop_state %>%
+  mutate(c97_base=0, c02_base=c02_per-c97_per, c07_base=c07_per-c97_per, c12_base=c12_per-c97_per)
+hay_state1 <- hay_state %>%
+  mutate(h97_base=0, h02_base=h02_per-h97_per, h07_base=h07_per-h97_per, h12_base=h12_per-h97_per)
+```
+
+The tables were refined to show only the relevant columns. 
+```{r}
+grass_state1 <- grass_state1 %>% 
+  select(-2:-11)
+shrub_state1 <- shrub_state1 %>% 
+  select(-2:-11)
+crop_state1 <- crop_state1 %>% 
+  select(-2:-11)
+hay_state1 <- hay_state1 %>% 
+  select(-2:-11)
+```
+***
+
+###d. Land Use Changes (Table)
+Preparing table for land use.
+
+Changing column names for join. 
+```{r}
+names(lc97)[3] <-  "water97"
+names(lc97)[4] <-  "developed97"
+names(lc97)[5] <- "national_forest97"
+names(lc97)[6] <- "public_land97"
+names(lc97)[7] <- "private97"
+names(lc97)[8] <- "mining97"
+names(lc97)[9] <- "barren_97"
+names(lc97)[10] <- "deci_forest97"
+names(lc97)[11] <- "ever_forest97"
+names(lc97)[12] <- "mix_forest97"
+names(lc97)[13] <- "grass97"
+names(lc97)[14] <- "shrub97"
+names(lc97)[15] <- "crop97"
+names(lc97)[16] <- "hay97"
+names(lc97)[17] <- "herbaceous97"
+names(lc97)[18] <- "wetland97"
+names(lc97)[19] <- "ice97"
+names(lc97)[20] <- "sum97"
+
+names(lc12)[3] <-  "water12"
+names(lc12)[4] <-  "developed12"
+names(lc12)[5] <- "national_forest12"
+names(lc12)[6] <- "public_land12"
+names(lc12)[7] <- "private12"
+names(lc12)[8] <- "mining12"
+names(lc12)[9] <- "barren_12"
+names(lc12)[10] <- "deci_forest12"
+names(lc12)[11] <- "ever_forest12"
+names(lc12)[12] <- "mix_forest12"
+names(lc12)[13] <- "grass12"
+names(lc12)[14] <- "shrub12"
+names(lc12)[15] <- "crop12"
+names(lc12)[16] <- "hay12"
+names(lc12)[17] <- "herbaceous12"
+names(lc12)[18] <- "wetland12"
+names(lc12)[19] <- "ice12"
+names(lc12)[20] <- "sum12"
+```
+
+Joining the two lc data, and removing extra data. 
+```{r}
+lc_table=left_join(lc97, lc12, by="fips")
+lc_table <- lc_table %>% 
+  select(-21)
+```
+
+Joining with county and herbicide_use
+```{r}
+lc_table=left_join(lc_table, county, by="fips")
+lc_table=left_join(lc_table, herbicide_use, by="fips")
+
+lc_table <- lc_table %>% 
+  select(-1,-2,-39,-40,-42,-44:-48)
+```
+
+Aggregating
+```{r}
+lc_table_st <- ddply(lc_table, "State", numcolwise(sum))
+```
+
+Calculating percent.
+```{r}
+lc_table_st97 <- lc_table_st %>% 
+  mutate(Water97=(water97/sum97)*100, Developed97=(developed97/sum97)*100, National_forest97=(national_forest97/sum97)*100, Public_land97=(public_land97/sum97)*100, Private97=(private97/sum97)*100, Mining97=(mining97/sum97)*100, Barren97=(barren_97/sum97)*100, Deci_forest97=(deci_forest97/sum97)*100, Ever_forest=(ever_forest97/sum97)*100, Mix_forest=(mix_forest97/sum97)*100, Grass97=(grass97/sum97)*100, Shrub97=(shrub97/sum97)*100, Crop97=(crop97/sum97)*100, Hay97=(hay97/sum97)*100, Herbaceous97=(herbaceous97/sum97)*100, Wetland97=(wetland97/sum97)*100, Ice97=(ice97/sum97)*100) 
+```
+```{r}
+lc_table_st12 <- lc_table_st %>%
+  mutate(Water12=(water12/sum12)*100, Developed12=(developed12/sum12)*100, National_forest12=(national_forest12/sum12)*100, Public_land12=(public_land12/sum12)*100, Private12=(private12/sum12)*100, Mining12=(mining12/sum12)*100, Barren12=(barren_12/sum12)*100, Deci_forest12=(deci_forest12/sum12)*100, Ever_forest=(ever_forest12/sum12)*100, Mix_forest=(mix_forest12/sum12)*100, Grass12=(grass12/sum12)*100, Shrub12=(shrub12/sum12)*100, Crop12=(crop12/sum12)*100, Hay12=(hay12/sum12)*100, Herbaceous12=(herbaceous12/sum12)*100, Wetland12=(wetland12/sum12)*100, Ice12=(ice12/sum12)*100)
+```
+
+*** 
+

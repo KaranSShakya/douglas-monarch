@@ -1,0 +1,65 @@
+---
+title: "Herbicide Active Ingredient"
+output:
+  workflowr::wflow_html:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r, echo=FALSE, message=FALSE}
+library(tidyverse)
+library(plyr)
+library(dplyr)
+library(png)
+library(grid)
+library(readxl)
+library(reshape2)
+library(ggplot2)
+library(gridExtra)
+library(imager)
+```
+
+
+> [Link](https://dickinson0-my.sharepoint.com/:x:/g/personal/shakyak_dickinson_edu/EdLaANccgbFDv5ABUcHSutwBj8LqOEN0OnMX0312x4uztA?e=KIwqWk) to the Table of 'Herbicide Active Ingredients used between 1997 to 2012']
+
+
+###Percent Changes from 1997 to 2012 
+
+**Table 1.** Herbicide Active Ingredient used in both hay/pastureland and cropland.
+
+**Note:** Any active ingredient with '**0 kg**' reading for 1997 was omitted (In other words, only compounds recorded in 1997 are shown). A lot of compounds had the value for *hay2012* as '**0 kg**' - this was allowed. 
+
+|Ingredient Name       |Percent Increase(%)|               |Ingredient Name  |Percent Decrease(%)|
+|:---------------------|:------------------|---------------|-----------------|:------------------|
+|1. Glyphosate         |917.5              |               |1. Imazaquin     |99.1               |
+|2. Clopyralid         |455.0              |               |2. MSMA          |98.23              |
+|3. Hexazinone         |380.9              |               |3. Fluazifop     |96.7               |
+|4. Tribenuron Methyl  |357.5              |               |4. Sethoxydim    |95.1               |                  
+|5. Thifensulfuron     |254.7              |               |5. Bentazone     |94.0               |
+|6. Metsulfuron        |206.1              |               |6. Acifluorfen   |93.7               | 
+|7. Simazine           |161.8              |               |7. Prosulfuron   |92.1               |
+|8. Dicamba            |136.7              |               |8. Dichlorprop   |87.8               |
+|9. Paraquat           |96.2               |               |9. Clomazone     |86.5               |
+|10. Diquat            |67.3               |               |10. Fluometuron  |86.3               |
+
+*Almost all of these herbicide active ingredients were Broadleaf Herbicides
+
+***
+
+###Compound Maps
+
+![**Figure 3.** This map was created in ArcGIS and shows the kg applied of glyphosate (left) and Dicamba (right) herbicide compounds during 1997 and 2012.](rfig_3.png)
+
+###**Discussion**
+
+All of the herbicide active ingredients in Table 1. and in Fig. 3 can be applied to broadleaves. The increases in all these broadleaf herbicide compounds not only complements the increase in percent acres treated with herbicide, but it also suggests a possible cause of floral decline. Fig. 3 illustrates how some of the prominent broadleaf herbicides have increased spatially. 
+
+The increase of compounds such as glyphosate directly relate to the first hypothesis explaining monarch population decline. The use of glyphosate contributes to the loss of milkweed, so it is interesting to see the proliferation of glyphosate within the project sites.
+
+Similarly, as explained before, it is difficult to connect the rise of these herbicide active ingredients to a decline in floral resources that causes monarch to fail in their migration. A more direct research would answer this question accurately. However, this data helps in showing the magnanimity of herbicide compounds that have dominated these states.    
+
+***

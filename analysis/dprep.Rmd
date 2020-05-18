@@ -1,0 +1,114 @@
+---
+title: "Data Preparation"
+output:
+  workflowr::wflow_html:
+    toc: true
+    toc_float:
+      collapsed: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1. Data Preparation
+    i) [Herbicide Use](dprep.html)
+    ii) [Land Cover](dprep_land.html)
+    iii) [County Area / FIPS Codes](dprep_county.html)
+    iv) [Herbicide Active Ingredients](dprep_ingredient.html)
+    
+
+#**i) Herbicide Use**
+
+###a. Downloading Data
+The Herbicide use data was collected from the United States Department of Agriculture (USDA). All of their downloadable data can be filtered from their '[Statistics Service](https://quickstats.nass.usda.gov/)' page. 
+
+
+The data was selected from the following criteria:
+
+* **Program:** CENSUS
+* **Sector:** ENVIRONMENTAL
+* **Group:** FARMS & LAND & ASSETS
+* **Commodity:** TREATED
+* **Data Item:** AG LAND - TREATED, MEASURED IN ACRE
+* **Domain:** CHEMICAL, HERBICIDE
+* **Geographic Level:** COUNTY
+
+For the **State:** the 7 states within the study sites - *Texas(TX)*, *Oklahoma(OK)*, *Arkansas(AK)*, *Louisiana(LA)*, *Missouri(MO)*, *Kansas(KS)*, and *Nebraska(NE)* were selected.
+
+For the **Year:** all the years available for download (*1997*, *2002*, *2007*, *2012*) were selected and downloaded individually. These files were saved as excel files and were renamed as: "**herb_97**", "**herb_02**", "**herb_07**", and "**herb_12**" respectively into the repository.  
+
+***
+
+###b. Cleaning and Organizing Data
+All of the cleaning and organizing the Herbicide data was mostly done through `R`, but there was an important step was done through `Excel`. 
+
+Each data table needs a **fips** column, which is the counties fips code. Fips codes are unique for each county and this column will act as a key when numerous data sets are joined together for analysis. A fips column was created in excel for all the years. The *fips* column replaced the *Region* column and they were the cumulation of *State ANS* and *County ANS*. After doing this, these excel files were ready to be imported to R. 
+
+This is the library used for data manupulation. This is the same library used for all sections that use R.  
+```{r message=FALSE}
+library(tidyverse)
+library(plyr)
+library(dplyr)
+library(png)
+library(grid)
+library(readxl)
+```
+
+The downloaded excel files were uploaded into R:
+```{r load_data}
+herb_97 <- read_excel("../data/big_data/herb_97.xlsx")
+herb_02 <- read_excel("../data/big_data/herb_02.xlsx")
+herb_07 <- read_excel("../data/big_data/herb_07.xlsx")
+herb_12 <- read_excel("../data/big_data/herb_12.xlsx")
+```
+
+The data contained a lot of columns that were unnecessary for analysis. Apart from the *Year*, *State*, *County*, and *Value*, all other columns were removed:
+```{r}
+herb_97[,c(1,3:5,7:9,11,12,14:19,21)] <- NULL
+herb_02[,c(1,3:5,7:9,11,12,14:19,21)] <- NULL
+herb_07[,c(1,3:5,7:9,11,12,14:19,21)] <- NULL
+herb_12[,c(1,3:5,7:9,11,12,14:19,21)] <- NULL
+```
+
+The column structure type was corrected. (*Value* fields was not numeric) 
+```{r warning=FALSE}
+herb_97$Value=as.numeric(herb_97$Value)
+herb_02$Value=as.numeric(herb_02$Value)
+herb_07$Value=as.numeric(herb_07$Value)
+herb_12$Value=as.numeric(herb_12$Value)
+```
+
+The columns names for *Value* were  changed so that it would be distinguishable once these data were combined into one table. 
+```{r}
+names(herb_97)[5] <- "herbicide_97"
+names(herb_02)[5] <- "herbicide_02"
+names(herb_07)[5] <- "herbicide_07"
+names(herb_12)[5] <- "herbicide_12"
+```
+
+Since the column names were now distinguishable by year, the *Years* and *State* in all the previous data frames were deleted so when these data frames were merged.
+```{r}
+herb97_join <- herb_97 %>% 
+  select(-Year)
+herb02_join <- herb_02 %>% 
+  select(fips, herbicide_02)
+herb07_join <- herb_07 %>%
+  select(fips, herbicide_07)
+herb12_join <- herb_12 %>% 
+  select(fips, herbicide_12)
+```
+
+These dataframes were then merged.
+```{r}
+herbicide_use <- merge(x=herb97_join, y=herb02_join, by="fips")
+herbicide_use <- merge(x=herbicide_use, y=herb07_join, by="fips")
+herbicide_use <- merge(x=herbicide_use, y=herb12_join, by="fips")
+```
+
+Finally this data was exported as another excel file. This was down with the code `write.xlsx(dataframe, "herbicide_use.xlsx", sheetname = "Sheet1")`. This dataset was named: **herbicide_use.xlsx**, and had the following columns: 
+
+fips | State | County | herbicide_97 | herbicide_02 | herbicide_07 | herbicide_12
+-----|-------|--------|--------------|--------------|--------------|-------------
+
+***

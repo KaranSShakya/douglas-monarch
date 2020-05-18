@@ -1,17 +1,43 @@
-name: "douglas-monarch"
-output_dir: ../docs
+name: "monarch_v2"
+output_dir: "../docs"
 navbar:
-  title: "douglas-monarch"
+  title: "Monarch Project"
+  type: default
   left:
-  - text: Home
-    href: index.html
-  - text: About
-    href: about.html
-  - text: License
-    href: license.html
+    - text: "Home"
+      href: index.html
+    - text: "Data Preparation"
+      href: dprep.html
+      menu:
+        - text: "Herbicide Use"
+          href: dprep.html
+        - text: "Land Cover"
+          href: dprep_land.html
+        - text: "County/FIPS Code"
+          href: dprep_county.html
+        - text: "Active Ingredient"
+          href: dprep_ingredient.html
+    - text: "Data Analysis"
+      href: analysis.html
+      menu:
+        - text: "Patterns of Herbicide Use"
+          href: analysis.html
+        - text: "Changes in Land Cover"
+          href: analysis_land.html
+        - text: "Identifying Active Ingredients"
+          href: analysis_ingredient.html
+    - text: "Results and Discussion"
+      menu:
+        - text: "Herbicide Use and Land Cover"
+          href: randd.html
+        - text: "Herbicide Active Ingredient"
+          href: results_ingredient.html
+  right:
+    - text: "About"
+      href: about.html
 output:
-  workflowr::wflow_html:
-    toc: yes
-    toc_float: yes
+  rmarkdown::html_document:
+    toc: true
+    toc_float: true
     theme: cosmo
     highlight: textmate

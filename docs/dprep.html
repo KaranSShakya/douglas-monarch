@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Data Preparation</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Monarch Project</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Data Preparation
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dprep.html">Herbicide Use</a>
+    </li>
+    <li>
+      <a href="dprep_land.html">Land Cover</a>
+    </li>
+    <li>
+      <a href="dprep_county.html">County/FIPS Code</a>
+    </li>
+    <li>
+      <a href="dprep_ingredient.html">Active Ingredient</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Data Analysis
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="analysis.html">Patterns of Herbicide Use</a>
+    </li>
+    <li>
+      <a href="analysis_land.html">Changes in Land Cover</a>
+    </li>
+    <li>
+      <a href="analysis_ingredient.html">Identifying Active Ingredients</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Results and Discussion
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="randd.html">Herbicide Use and Land Cover</a>
+    </li>
+    <li>
+      <a href="results_ingredient.html">Herbicide Active Ingredient</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="about.html">About</a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Data Preparation</h1>
+
+</div>
+
+
+<ol style="list-style-type: decimal">
+<li>Data Preparation
+<ol style="list-style-type: lower-roman">
+<li><a href="dprep.html">Herbicide Use</a></li>
+<li><a href="dprep_land.html">Land Cover</a></li>
+<li><a href="dprep_county.html">County Area / FIPS Codes</a></li>
+<li><a href="dprep_ingredient.html">Herbicide Active Ingredients</a></li>
+</ol></li>
+</ol>
+<div id="i-herbicide-use" class="section level1">
+<h1><strong>i) Herbicide Use</strong></h1>
+<div id="a.-downloading-data" class="section level3">
+<h3>a. Downloading Data</h3>
+<p>The Herbicide use data was collected from the United States Department of Agriculture (USDA). All of their downloadable data can be filtered from their ‘<a href="https://quickstats.nass.usda.gov/">Statistics Service</a>’ page.</p>
+<p>The data was selected from the following criteria:</p>
+<ul>
+<li><strong>Program:</strong> CENSUS</li>
+<li><strong>Sector:</strong> ENVIRONMENTAL</li>
+<li><strong>Group:</strong> FARMS &amp; LAND &amp; ASSETS</li>
+<li><strong>Commodity:</strong> TREATED</li>
+<li><strong>Data Item:</strong> AG LAND - TREATED, MEASURED IN ACRE</li>
+<li><strong>Domain:</strong> CHEMICAL, HERBICIDE</li>
+<li><strong>Geographic Level:</strong> COUNTY</li>
+</ul>
+<p>For the <strong>State:</strong> the 7 states within the study sites - <em>Texas(TX)</em>, <em>Oklahoma(OK)</em>, <em>Arkansas(AK)</em>, <em>Louisiana(LA)</em>, <em>Missouri(MO)</em>, <em>Kansas(KS)</em>, and <em>Nebraska(NE)</em> were selected.</p>
+<p>For the <strong>Year:</strong> all the years available for download (<em>1997</em>, <em>2002</em>, <em>2007</em>, <em>2012</em>) were selected and downloaded individually. These files were saved as excel files and were renamed as: “<strong>herb_97</strong>”, “<strong>herb_02</strong>”, “<strong>herb_07</strong>”, and “<strong>herb_12</strong>” respectively into the repository.</p>
+<hr />
+</div>
+<div id="b.-cleaning-and-organizing-data" class="section level3">
+<h3>b. Cleaning and Organizing Data</h3>
+<p>All of the cleaning and organizing the Herbicide data was mostly done through <code>R</code>, but there was an important step was done through <code>Excel</code>.</p>
+<p>Each data table needs a <strong>fips</strong> column, which is the counties fips code. Fips codes are unique for each county and this column will act as a key when numerous data sets are joined together for analysis. A fips column was created in excel for all the years. The <em>fips</em> column replaced the <em>Region</em> column and they were the cumulation of <em>State ANS</em> and <em>County ANS</em>. After doing this, these excel files were ready to be imported to R.</p>
+<p>This is the library used for data manupulation. This is the same library used for all sections that use R.</p>
+<pre class="r"><code>library(tidyverse)
+library(plyr)
+library(dplyr)
+library(png)
+library(grid)
+library(readxl)</code></pre>
+<p>The downloaded excel files were uploaded into R:</p>
+<pre class="r"><code>herb_97 &lt;- read_excel(&quot;../data/big_data/herb_97.xlsx&quot;)
+herb_02 &lt;- read_excel(&quot;../data/big_data/herb_02.xlsx&quot;)
+herb_07 &lt;- read_excel(&quot;../data/big_data/herb_07.xlsx&quot;)
+herb_12 &lt;- read_excel(&quot;../data/big_data/herb_12.xlsx&quot;)</code></pre>
+<p>The data contained a lot of columns that were unnecessary for analysis. Apart from the <em>Year</em>, <em>State</em>, <em>County</em>, and <em>Value</em>, all other columns were removed:</p>
+<pre class="r"><code>herb_97[,c(1,3:5,7:9,11,12,14:19,21)] &lt;- NULL
+herb_02[,c(1,3:5,7:9,11,12,14:19,21)] &lt;- NULL
+herb_07[,c(1,3:5,7:9,11,12,14:19,21)] &lt;- NULL
+herb_12[,c(1,3:5,7:9,11,12,14:19,21)] &lt;- NULL</code></pre>
+<p>The column structure type was corrected. (<em>Value</em> fields was not numeric)</p>
+<pre class="r"><code>herb_97$Value=as.numeric(herb_97$Value)
+herb_02$Value=as.numeric(herb_02$Value)
+herb_07$Value=as.numeric(herb_07$Value)
+herb_12$Value=as.numeric(herb_12$Value)</code></pre>
+<p>The columns names for <em>Value</em> were changed so that it would be distinguishable once these data were combined into one table.</p>
+<pre class="r"><code>names(herb_97)[5] &lt;- &quot;herbicide_97&quot;
+names(herb_02)[5] &lt;- &quot;herbicide_02&quot;
+names(herb_07)[5] &lt;- &quot;herbicide_07&quot;
+names(herb_12)[5] &lt;- &quot;herbicide_12&quot;</code></pre>
+<p>Since the column names were now distinguishable by year, the <em>Years</em> and <em>State</em> in all the previous data frames were deleted so when these data frames were merged.</p>
+<pre class="r"><code>herb97_join &lt;- herb_97 %&gt;% 
+  select(-Year)
+herb02_join &lt;- herb_02 %&gt;% 
+  select(fips, herbicide_02)
+herb07_join &lt;- herb_07 %&gt;%
+  select(fips, herbicide_07)
+herb12_join &lt;- herb_12 %&gt;% 
+  select(fips, herbicide_12)</code></pre>
+<p>These dataframes were then merged.</p>
+<pre class="r"><code>herbicide_use &lt;- merge(x=herb97_join, y=herb02_join, by=&quot;fips&quot;)
+herbicide_use &lt;- merge(x=herbicide_use, y=herb07_join, by=&quot;fips&quot;)
+herbicide_use &lt;- merge(x=herbicide_use, y=herb12_join, by=&quot;fips&quot;)</code></pre>
+<p>Finally this data was exported as another excel file. This was down with the code <code>write.xlsx(dataframe, &quot;herbicide_use.xlsx&quot;, sheetname = &quot;Sheet1&quot;)</code>. This dataset was named: <strong>herbicide_use.xlsx</strong>, and had the following columns:</p>
+<table>
+<thead>
+<tr class="header">
+<th>fips</th>
+<th>State</th>
+<th>County</th>
+<th>herbicide_97</th>
+<th>herbicide_02</th>
+<th>herbicide_07</th>
+<th>herbicide_12</th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+<hr />
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

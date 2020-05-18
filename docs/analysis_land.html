@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Data Analysis</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Monarch Project</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Data Preparation
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dprep.html">Herbicide Use</a>
+    </li>
+    <li>
+      <a href="dprep_land.html">Land Cover</a>
+    </li>
+    <li>
+      <a href="dprep_county.html">County/FIPS Code</a>
+    </li>
+    <li>
+      <a href="dprep_ingredient.html">Active Ingredient</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Data Analysis
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="analysis.html">Patterns of Herbicide Use</a>
+    </li>
+    <li>
+      <a href="analysis_land.html">Changes in Land Cover</a>
+    </li>
+    <li>
+      <a href="analysis_ingredient.html">Identifying Active Ingredients</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Results and Discussion
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="randd.html">Herbicide Use and Land Cover</a>
+    </li>
+    <li>
+      <a href="results_ingredient.html">Herbicide Active Ingredient</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="about.html">About</a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Data Analysis</h1>
+
+</div>
+
+
+<ol start="2" style="list-style-type: decimal">
+<li>Data Analysis
+<ol style="list-style-type: lower-roman">
+<li><a href="analysis.html">Patterns of Herbicide Use</a></li>
+<li><a href="analysis_land.html">Changes in Land Cover</a></li>
+<li><a href="analysis_ingredient.html">Identifying Herbicide Active Ingredients</a></li>
+</ol></li>
+</ol>
+<div id="ii-changes-in-land-cover" class="section level1">
+<h1><strong>ii) Changes in Land Cover</strong></h1>
+<p>All the files created in <em>Data Preparation</em> was imported. While the focus on analysis in this page was with land cover changes, the other files would help with joining and normalizing the dataframes.</p>
+<pre class="r"><code>lc97 &lt;- read_excel(&quot;../data/big_data/lc97.xlsx&quot;)
+lc02 &lt;- read_excel(&quot;../data/big_data/lc02.xlsx&quot;)
+lc07 &lt;- read_excel(&quot;../data/big_data/lc07.xlsx&quot;)
+lc12 &lt;- read_excel(&quot;../data/big_data/lc12.xlsx&quot;)
+county &lt;- read_excel(&quot;../data/big_data/county.xlsx&quot;)
+herbicide_use &lt;- read_excel(&quot;../data/big_data/herbicide_use.xlsx&quot;)</code></pre>
+<p>Out of the 17 land cover properties, 4 were selected. These 4 land cover were estimated to influence the availability of nectar for the moanrchs:</p>
+<ul>
+<li><strong>Grassland</strong></li>
+<li><strong>Shrubland</strong></li>
+<li><strong>Cropland</strong></li>
+<li><strong>Hay/Pasture</strong></li>
+</ul>
+<hr />
+<div id="a.-calculating-percent-of-land-cover" class="section level3">
+<h3>a. Calculating Percent of Land cover</h3>
+<p>Before calculating the changes of land cover of the selected land cover properties, all the data from differnet land cover needed to be organized into one table.</p>
+<p>The land cover dataframes were cleaned.</p>
+<pre class="r"><code>lc97_select &lt;- lc97 %&gt;% 
+  select(2, 13:16, 20)
+lc02_select &lt;- lc02 %&gt;% 
+  select(2, 13:16, 20)
+lc07_select &lt;- lc07 %&gt;% 
+  select(2, 13:16, 20)
+lc12_select &lt;- lc12 %&gt;% 
+  select(2, 13:16, 20)</code></pre>
+<p>The land cover properties were then normalized by the <em>sum</em>.</p>
+<pre class="r"><code>lc97_select &lt;- lc97_select %&gt;% 
+  mutate(grass97=(grassland/sum)*100, shrub97=(shrubland/sum)*100, crop97=(cropland/sum)*100, hay97=(hay_pasture_land/sum)*100) %&gt;% 
+  select(1, 7:10)
+lc02_select &lt;- lc02_select %&gt;% 
+  mutate(grass02=(grassland/sum)*100, shrub02=(shrubland/sum)*100, crop02=(cropland/sum)*100, hay02=(hay_pasture_land/sum)*100) %&gt;% 
+  select(1, 7:10)
+lc07_select &lt;- lc07_select %&gt;% 
+  mutate(grass07=(grassland/sum)*100, shrub07=(shrubland/sum)*100, crop07=(cropland/sum)*100, hay07=(hay_pasture_land/sum)*100) %&gt;% 
+  select(1, 7:10)
+lc12_select &lt;- lc12_select %&gt;% 
+  mutate(grass12=(grassland/sum)*100, shrub12=(shrubland/sum)*100, crop12=(cropland/sum)*100, hay12=(hay_pasture_land/sum)*100) %&gt;% 
+  select(1, 7:10)</code></pre>
+<p>Finally these dataframed were merged into one <strong>lc4</strong>.</p>
+<pre class="r"><code>lc4 &lt;- merge(x=lc97_select, y=lc02_select, by=&quot;fips&quot;)
+lc4 &lt;- merge(x=lc4, y=lc07_select, by=&quot;fips&quot;)
+lc4 &lt;- merge(x=lc4, y=lc12_select, by=&quot;fips&quot;)</code></pre>
+<p>This merged data was then merged again to the <em>county</em> table so that all the percent value could be represented in acres.</p>
+<pre class="r"><code>lc4 &lt;- merge(x=county, y=lc4, by=&quot;fips&quot;)</code></pre>
+<p>The perent values were then calculated to show land cover properties in acres.</p>
+<pre class="r"><code>lc4_acre &lt;- lc4 %&gt;%
+  mutate(g97_acre=(grass97/100)*area_acre, s97_acre=(shrub97/100)*area_acre, c97_acre=(crop97/100)*100, h97_acre=(hay97/100)*area_acre, g02_acre=(grass02/100)*area_acre, s02_acre=(shrub02/100)*area_acre, c02_acre=(crop02/100)*100, h02_acre=(hay02/100)*area_acre, g07_acre=(grass07/100)*area_acre, s07_acre=(shrub07/100)*area_acre, c07_acre=(crop07/100)*100, h07_acre=(hay07/100)*area_acre, g12_acre=(grass12/100)*area_acre, s12_acre=(shrub12/100)*area_acre, c12_acre=(crop12/100)*100, h12_acre=(hay12/100)*area_acre) %&gt;% 
+  select(1,3,21:36)</code></pre>
+<p>Now that all land cover properties were shown in acres, each land cover were made into its own data frams so that further analysis could take place.</p>
+<pre class="r"><code>grass &lt;- lc4_acre %&gt;% 
+  select(1,2,3,7,11,15)
+shrub &lt;- lc4_acre %&gt;% 
+  select(1,2,4,8,12,16)
+crop &lt;- lc4_acre %&gt;% 
+  select(1,2,5,9,13,17)
+hay &lt;- lc4_acre %&gt;% 
+  select(1,2,6,10,14,18)</code></pre>
+<hr />
+</div>
+<div id="b.-change-from-1997-to-2012" class="section level3">
+<h3>b. Change from 1997 to 2012</h3>
+<p>Like herbicide use, the change from 1997 to 2012 was done for all the chosen land cover.</p>
+<pre class="r"><code>grass &lt;- grass %&gt;% 
+  mutate(grass_chg=(g12_acre-g97_acre))
+shrub &lt;- shrub %&gt;% 
+  mutate(shrub_chg=(s12_acre-s97_acre))
+crop &lt;- crop %&gt;% 
+  mutate(crop_chg=(c12_acre-c97_acre))
+hay &lt;- hay %&gt;% 
+  mutate(hay_chg=(h12_acre-h97_acre))</code></pre>
+<p>This change was joined with <em>county</em> dataframe so that each change could be normalized with the size of the county.</p>
+<pre class="r"><code>grass1 &lt;- merge(x=county, y=grass, by=&quot;fips&quot;) 
+shrub1 &lt;- merge(x=county, y=shrub, by=&quot;fips&quot;)
+crop1 &lt;- merge(x=county, y=crop, by=&quot;fips&quot;)
+hay1 &lt;- merge(x=county, y=hay, by=&quot;fips&quot;)</code></pre>
+<p>The change was then normalized.</p>
+<pre class="r"><code>grass1 &lt;- grass1 %&gt;% 
+  mutate(lg_grassch=(grass_chg/area_acre)*100)
+shrub1 &lt;- shrub1 %&gt;% 
+  mutate(lg_shrubch=(shrub_chg/area_acre)*100)
+crop1 &lt;- crop1 %&gt;% 
+  mutate(lg_cropch=(crop_chg/area_acre)*100)
+hay1 &lt;- hay1 %&gt;% 
+  mutate(lg_haych=(hay_chg/area_acre)*100)</code></pre>
+<hr />
+</div>
+<div id="c.-trend-in-land-cover-changes" class="section level3">
+<h3>c. Trend in land cover changes</h3>
+<p>The land cover changes were also prepared to be analized in a state level. The dataframe previously created was joined.</p>
+<pre class="r"><code>state_join &lt;- herbicide_use %&gt;% 
+  select(2,3)</code></pre>
+<p>The states were joined with the land cover dataframe. These were joined by the key <strong>fips</strong>.</p>
+<pre class="r"><code>grass_state &lt;- merge(x=state_join, y=grass, by=&quot;fips&quot;) 
+shrub_state &lt;- merge(x=state_join, y=shrub, by=&quot;fips&quot;)
+crop_state &lt;- merge(x=state_join, y=crop, by=&quot;fips&quot;)
+hay_state &lt;- merge(x=state_join, y=hay, by=&quot;fips&quot;)</code></pre>
+<p>The land cover properties were aggregate by summing these value in a state level.</p>
+<pre class="r"><code>grass_state &lt;- ddply(grass_state, &quot;State&quot;, numcolwise(sum))
+shrub_state &lt;- ddply(shrub_state, &quot;State&quot;, numcolwise(sum))
+crop_state &lt;- ddply(crop_state, &quot;State&quot;, numcolwise(sum))
+hay_state &lt;- ddply(hay_state, &quot;State&quot;, numcolwise(sum))</code></pre>
+<p>The values were normalized with the size of the state.</p>
+<pre class="r"><code>grass_state &lt;- merge(x=state_acre, y=grass_state, by=&quot;State&quot;)
+shrub_state &lt;- merge(x=state_acre, y=shrub_state, by=&quot;State&quot;)
+crop_state &lt;- merge(x=state_acre, y=crop_state, by=&quot;State&quot;)
+hay_state &lt;- merge(x=state_acre, y=hay_state, by=&quot;State&quot;)</code></pre>
+<p>A percent change was calculated:</p>
+<pre class="r"><code>grass_state &lt;- grass_state %&gt;%  
+  mutate(g97_per=(g97_acre/area_acre)*100, g02_per=(g02_acre/area_acre)*100, g07_per=(g07_acre/area_acre)*100, g12_per=(g12_acre/area_acre)*100)
+shrub_state &lt;- shrub_state %&gt;%  
+  mutate(s97_per=(s97_acre/area_acre)*100, s02_per=(s02_acre/area_acre)*100, s07_per=(s07_acre/area_acre)*100, s12_per=(s12_acre/area_acre)*100)
+crop_state &lt;- crop_state %&gt;%  
+  mutate(c97_per=(c97_acre/area_acre)*100, c02_per=(c02_acre/area_acre)*100, c07_per=(c07_acre/area_acre)*100, c12_per=(c12_acre/area_acre)*100)
+hay_state &lt;- hay_state %&gt;%  
+  mutate(h97_per=(h97_acre/area_acre)*100, h02_per=(h02_acre/area_acre)*100, h07_per=(h07_acre/area_acre)*100, h12_per=(h12_acre/area_acre)*100)</code></pre>
+<p>Calculating percent change from base year 1997.</p>
+<pre class="r"><code>grass_state1 &lt;- grass_state %&gt;%
+  mutate(g97_base=0, g02_base=g02_per-g97_per, g07_base=g07_per-g97_per, g12_base=g12_per-g97_per)
+shrub_state1 &lt;- shrub_state %&gt;%
+  mutate(s97_base=0, s02_base=s02_per-s97_per, s07_base=s07_per-s97_per, s12_base=s12_per-s97_per)
+crop_state1 &lt;- crop_state %&gt;%
+  mutate(c97_base=0, c02_base=c02_per-c97_per, c07_base=c07_per-c97_per, c12_base=c12_per-c97_per)
+hay_state1 &lt;- hay_state %&gt;%
+  mutate(h97_base=0, h02_base=h02_per-h97_per, h07_base=h07_per-h97_per, h12_base=h12_per-h97_per)</code></pre>
+<p>The tables were refined to show only the relevant columns.</p>
+<pre class="r"><code>grass_state1 &lt;- grass_state1 %&gt;% 
+  select(-2:-11)
+shrub_state1 &lt;- shrub_state1 %&gt;% 
+  select(-2:-11)
+crop_state1 &lt;- crop_state1 %&gt;% 
+  select(-2:-11)
+hay_state1 &lt;- hay_state1 %&gt;% 
+  select(-2:-11)</code></pre>
+<hr />
+</div>
+<div id="d.-land-use-changes-table" class="section level3">
+<h3>d. Land Use Changes (Table)</h3>
+<p>Preparing table for land use.</p>
+<p>Changing column names for join.</p>
+<pre class="r"><code>names(lc97)[3] &lt;-  &quot;water97&quot;
+names(lc97)[4] &lt;-  &quot;developed97&quot;
+names(lc97)[5] &lt;- &quot;national_forest97&quot;
+names(lc97)[6] &lt;- &quot;public_land97&quot;
+names(lc97)[7] &lt;- &quot;private97&quot;
+names(lc97)[8] &lt;- &quot;mining97&quot;
+names(lc97)[9] &lt;- &quot;barren_97&quot;
+names(lc97)[10] &lt;- &quot;deci_forest97&quot;
+names(lc97)[11] &lt;- &quot;ever_forest97&quot;
+names(lc97)[12] &lt;- &quot;mix_forest97&quot;
+names(lc97)[13] &lt;- &quot;grass97&quot;
+names(lc97)[14] &lt;- &quot;shrub97&quot;
+names(lc97)[15] &lt;- &quot;crop97&quot;
+names(lc97)[16] &lt;- &quot;hay97&quot;
+names(lc97)[17] &lt;- &quot;herbaceous97&quot;
+names(lc97)[18] &lt;- &quot;wetland97&quot;
+names(lc97)[19] &lt;- &quot;ice97&quot;
+names(lc97)[20] &lt;- &quot;sum97&quot;
+
+names(lc12)[3] &lt;-  &quot;water12&quot;
+names(lc12)[4] &lt;-  &quot;developed12&quot;
+names(lc12)[5] &lt;- &quot;national_forest12&quot;
+names(lc12)[6] &lt;- &quot;public_land12&quot;
+names(lc12)[7] &lt;- &quot;private12&quot;
+names(lc12)[8] &lt;- &quot;mining12&quot;
+names(lc12)[9] &lt;- &quot;barren_12&quot;
+names(lc12)[10] &lt;- &quot;deci_forest12&quot;
+names(lc12)[11] &lt;- &quot;ever_forest12&quot;
+names(lc12)[12] &lt;- &quot;mix_forest12&quot;
+names(lc12)[13] &lt;- &quot;grass12&quot;
+names(lc12)[14] &lt;- &quot;shrub12&quot;
+names(lc12)[15] &lt;- &quot;crop12&quot;
+names(lc12)[16] &lt;- &quot;hay12&quot;
+names(lc12)[17] &lt;- &quot;herbaceous12&quot;
+names(lc12)[18] &lt;- &quot;wetland12&quot;
+names(lc12)[19] &lt;- &quot;ice12&quot;
+names(lc12)[20] &lt;- &quot;sum12&quot;</code></pre>
+<p>Joining the two lc data, and removing extra data.</p>
+<pre class="r"><code>lc_table=left_join(lc97, lc12, by=&quot;fips&quot;)
+lc_table &lt;- lc_table %&gt;% 
+  select(-21)</code></pre>
+<p>Joining with county and herbicide_use</p>
+<pre class="r"><code>lc_table=left_join(lc_table, county, by=&quot;fips&quot;)
+lc_table=left_join(lc_table, herbicide_use, by=&quot;fips&quot;)
+
+lc_table &lt;- lc_table %&gt;% 
+  select(-1,-2,-39,-40,-42,-44:-48)</code></pre>
+<p>Aggregating</p>
+<pre class="r"><code>lc_table_st &lt;- ddply(lc_table, &quot;State&quot;, numcolwise(sum))</code></pre>
+<p>Calculating percent.</p>
+<pre class="r"><code>lc_table_st97 &lt;- lc_table_st %&gt;% 
+  mutate(Water97=(water97/sum97)*100, Developed97=(developed97/sum97)*100, National_forest97=(national_forest97/sum97)*100, Public_land97=(public_land97/sum97)*100, Private97=(private97/sum97)*100, Mining97=(mining97/sum97)*100, Barren97=(barren_97/sum97)*100, Deci_forest97=(deci_forest97/sum97)*100, Ever_forest=(ever_forest97/sum97)*100, Mix_forest=(mix_forest97/sum97)*100, Grass97=(grass97/sum97)*100, Shrub97=(shrub97/sum97)*100, Crop97=(crop97/sum97)*100, Hay97=(hay97/sum97)*100, Herbaceous97=(herbaceous97/sum97)*100, Wetland97=(wetland97/sum97)*100, Ice97=(ice97/sum97)*100) </code></pre>
+<pre class="r"><code>lc_table_st12 &lt;- lc_table_st %&gt;%
+  mutate(Water12=(water12/sum12)*100, Developed12=(developed12/sum12)*100, National_forest12=(national_forest12/sum12)*100, Public_land12=(public_land12/sum12)*100, Private12=(private12/sum12)*100, Mining12=(mining12/sum12)*100, Barren12=(barren_12/sum12)*100, Deci_forest12=(deci_forest12/sum12)*100, Ever_forest=(ever_forest12/sum12)*100, Mix_forest=(mix_forest12/sum12)*100, Grass12=(grass12/sum12)*100, Shrub12=(shrub12/sum12)*100, Crop12=(crop12/sum12)*100, Hay12=(hay12/sum12)*100, Herbaceous12=(herbaceous12/sum12)*100, Wetland12=(wetland12/sum12)*100, Ice12=(ice12/sum12)*100)</code></pre>
+<hr />
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

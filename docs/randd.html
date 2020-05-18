@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Results and Discussion</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Monarch Project</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Data Preparation
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dprep.html">Herbicide Use</a>
+    </li>
+    <li>
+      <a href="dprep_land.html">Land Cover</a>
+    </li>
+    <li>
+      <a href="dprep_county.html">County/FIPS Code</a>
+    </li>
+    <li>
+      <a href="dprep_ingredient.html">Active Ingredient</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Data Analysis
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="analysis.html">Patterns of Herbicide Use</a>
+    </li>
+    <li>
+      <a href="analysis_land.html">Changes in Land Cover</a>
+    </li>
+    <li>
+      <a href="analysis_ingredient.html">Identifying Active Ingredients</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Results and Discussion
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="randd.html">Herbicide Use and Land Cover</a>
+    </li>
+    <li>
+      <a href="results_ingredient.html">Herbicide Active Ingredient</a>
+    </li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="about.html">About</a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Results and Discussion</h1>
+
+</div>
+
+
+<ol start="3" style="list-style-type: decimal">
+<li>Results and Discussions
+<ol style="list-style-type: lower-roman">
+<li><a href="randd.html">Herbicide Use and Land Cover</a></li>
+<li><a href="results_ingredient.html">Herbicide Active Ingredients</a></li>
+</ol></li>
+</ol>
+<div id="herbicide-use-per-acres" class="section level2">
+<h2>Herbicide Use per Acres</h2>
+<div class="figure">
+<img src="rfig_1a.png" alt="Figure 1a. This figure was created using ArcGIS. The main map is an illustration of the Change in Percent Area Treated with Herbicide from 1997 to 2012. The red shade indicates an increase in area treated while the green shade illustrates counties where area treated with herbicide has decreased." />
+<p class="caption"><strong>Figure 1a.</strong> This figure was created using ArcGIS. The main map is an illustration of the ‘Change in Percent Area Treated with Herbicide from 1997 to 2012’. The red shade indicates an increase in area treated while the green shade illustrates counties where area treated with herbicide has decreased.</p>
+</div>
+<p><img src="randd_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><strong>Figure 1b.</strong> Shows the changes in state-level percent area treated with herbicide.</p>
+<ul>
+<li>Both Fig. 1a and Fig. 1b show an increasing trend in percent acres treated with herbicide, which means more land is being treated with herbicides.</li>
+<li>The most increase in percent acres treated is seen in western Kansas and north-west Nebraska. Hot spot analysis reflect these increases (Fig. 1a). This is represented in Fig. 1b, with Nebraska and Kansas showing the most change. (Note: The blue shade in the Hot Spot map does not indicate a decrease in herbicide use per acre, but simply a low value of change.)</li>
+<li>The eastern and southern part shows a moderate amount of increases, with slight decreases in some counties.</li>
+</ul>
+<hr />
+</div>
+<div id="changes-in-land-use" class="section level2">
+<h2>Changes in Land Use</h2>
+<div class="figure">
+<img src="rfig_2a.png" alt="Figure 2a. This map was created in ArcGIS and illustrates changes in land use in Grassland, Shrubland, Hay/Pasture Land, and Cropland from 1997 to 2012. The red shade represents loss of certain land types, while a green shade represents a gain of that land type. Grey color indicates no signifianct change." />
+<p class="caption"><strong>Figure 2a.</strong> This map was created in ArcGIS and illustrates changes in land use in Grassland, Shrubland, Hay/Pasture Land, and Cropland from 1997 to 2012. The red shade represents loss of certain land types, while a green shade represents a gain of that land type. Grey color indicates no signifianct change.</p>
+</div>
+<p><img src="randd_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><strong>Figure 2b.</strong> These 4 graphs represent a state level ‘Percent Change in land cover from 1997 to 2012’ for Cropland, Hay/Pasture land, Grassland, and Shrubland. The percent changes are relative to the value each state had in 1997.</p>
+<blockquote>
+<p><a href="https://dickinson0-my.sharepoint.com/:x:/g/personal/shakyak_dickinson_edu/EflwJTpNam1JtHFDBJH2u2sB3OEORr-AfgYKiacJDb8k3A?e=CmertB">Link</a> to Table with all the percent value of each land cover type.</p>
+</blockquote>
+<p>*The range of cropland change, as seen in Fig. 2a and Fig. 2b, is very little.</p>
+<p>*There was noticable increases of grassland in Nebraska, eastern Missouri, and some southern parts of Texas. While, majority of Loiusiana and Arkansas had no significant changes in their grassland, the rest of the states had lost some percentage of grasslands. Western Kansas, and Oklahoma lost the most grasslands.</p>
+<p>*The eastern states, specially Nebraska, Arkansas, and Loiusiana had no significant changes in Shrubland. While, some western counties in Texas shows some increase, Fig. 2b shows Texas, along with Oklahoma, are among the states loosing the most shrubland.</p>
+<p>*For hay and pastureland, the central part of the states showed some increase. Loisiana lost the most while, Oklahoma gained the most hay and pastureland.</p>
+<p>*<strong>Note:</strong> While the land cover changes are helpful to see the changes in time, it is important to understand the maps limitation. First, the resolution of the map is at 250m, and with a finer resolution, more accurate results can be calculated. Second, these land cover maps were generated by remote sensing which can have inaccurate interpretation of the attributes of the land.</p>
+<hr />
+<div id="discussion" class="section level3">
+<h3><strong>Discussion</strong></h3>
+<p>The rise of percent acres treated with herbicide may contribute to monarch butterflies unable to complete their migration. All states within the project site showed an increase in acres treated, and almost all counties experianced certain amount of increases. If more acres of land are treated with herbicides, it is likely that many broadleaf plants that monarch rely on during their migration are declining.</p>
+<p>Cropland, which was previously expected to decline the most, was actually the land cover that experianced the lowest change. However, grassland, hay/pasture land, and shrubland exprianced decline. While Fig. 2b illustrates an imperfect balance of percent increase and decrease (with the exception of shrubland), the increases of all these land covers are concentrated on very few counties. Most of the counties within the project site experianced decline in all forms of land cover. The migratory route of monarch’s is very large, and increases in some counties is likely to prove insignificant to them. It is also likely that the decrease in all these land cover would result in the decrease of floral abvailability.</p>
+<p>It is interesting to note the relation between the two maps: Fig. 1a and Fig. 2a. For example, western Kansas had a steep increase in percent acres treated with herbicides, but the area also lost a lot of grassland and a little shrubland and hay/pastureland. These patterns could indicate that more and more croplands were beginning to be treated with herbicides.</p>
+<p>While these results help in building a context of the area where monarch’s fly during their migration, is it difficult to predict if these changes really affect monarch butterflies. While it can be likely that these changes do seem to be detrimental to monarch butterflies, further research regarding the count of monarch butterflies in these states, and research that directly corresponds these changes to floral availability could provide more accurate corelation. However, the data regarding moanrch count and floral resources have their own uncertainties and are not readily available. But with the dataset that this project dealt with, the changes in herbicide use and land cover does appear to hinder monarch’s availability to find floral resources.</p>
+<hr />
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
